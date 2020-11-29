@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imageChat/view/pages/chats_list_page.dart';
 
 import '../common/nav/5n_bottom_bar.dart';
 
@@ -29,7 +30,7 @@ class MyHome extends StatelessWidget {
 
           return IndexedStack(
             index: snapshot.data,
-            children: [Container(), Container(), ProfileLayout(),],
+            children: [ChatList(), Container(), ProfileLayout(),],
           );
         },
       ),

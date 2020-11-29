@@ -32,8 +32,8 @@ class FiveNBottomBar extends StatelessWidget {
             color: Theme.of(context).canvasColor,
             child: SalomonBottomBar(
               items: [
-                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.line_chart), title: Text('Stocks')),
-                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.home), title: Text('Portfolio')),
+                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.facebook_messenger), title: Text('Message')),
+                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.image), title: Text('Image')),
                 SalomonBottomBarItem(icon: ProfileDarkMode(), title: Text('${locator<AuthService>().user}')),
               ],
 
