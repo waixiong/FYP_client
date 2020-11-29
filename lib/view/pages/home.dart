@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
+import '../common/nav/SecretImageTopBar.dart';
+import '../common/nav/QrCodeTopBar.dart';
 import '../common/nav/5n_bottom_bar.dart';
-
 import '../pages/profile.dart';
 
 class MyHome extends StatelessWidget {
@@ -29,7 +29,7 @@ class MyHome extends StatelessWidget {
 
           return IndexedStack(
             index: snapshot.data,
-            children: [Container(), Container(), ProfileLayout(),],
+            children: [QRCodeTopBar(), SecretImageTopBar(), ProfileLayout(),],
           );
         },
       ),
