@@ -51,7 +51,7 @@ class AuthService extends ChangeNotifier {
       print("Access: ${googleAuth.accessToken}");
       
       try {
-        Map<String, dynamic> result = await locator<API>().post(service, '/api/invest/user/signin', {
+        Map<String, dynamic> result = await locator<API>().post(service, '/api/user/signin', {
           "idToken": googleAuth.idToken,
           "accessToken": googleAuth.accessToken
         });
@@ -71,10 +71,10 @@ class AuthService extends ChangeNotifier {
       }
     } catch(e) {
       print('--- Silently GOOGLE sign in ERR ---');
-      log.e(e);
+      // log.e(e);
       _status = AuthStatus.Unauthenticated;
       notifyListeners();
-      throw(checkServiceError(e));
+      throw(e);
     }
   }
 
@@ -92,7 +92,7 @@ class AuthService extends ChangeNotifier {
       print("Id: ${googleAuth.idToken}");
       print("Access: ${googleAuth.accessToken}");
       try {
-        Map<String, dynamic> result = await locator<API>().post(service, '/api/invest/user/signin', {
+        Map<String, dynamic> result = await locator<API>().post(service, '/api/user/signin', {
           "idToken": googleAuth.idToken,
           "accessToken": googleAuth.accessToken
         });
@@ -106,6 +106,7 @@ class AuthService extends ChangeNotifier {
         print('--- API ERR ---');
         _status = AuthStatus.Unauthenticated;
         notifyListeners();
+        log.e(e);
         throw(checkServiceError(e));
       }
     } catch(e) {
