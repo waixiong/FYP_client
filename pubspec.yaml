@@ -45,6 +45,8 @@ dependencies:
   line_awesome_flutter: ^1.0.1
   auto_size_text: ^2.1.0
   salomon_bottom_bar: ^2.0.0
+  dash_chat: ^1.1.14
+  image_picker: ^0.6.7+4
 
 
 dev_dependencies:

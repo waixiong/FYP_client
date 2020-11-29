@@ -7,15 +7,10 @@ class ScanCodePage extends StatefulWidget {
 
 class ScanCodePageState extends State<ScanCodePage>{
 
-  String secretMessage = "";
-  String secretKey = "";
+  String decodedOutput = "";
 
-  void secretMessageOnChange(String value){
-    setState(() => secretMessage = value);
-  }
-
-  void secretKeyOnChange(String value){
-    setState(() => secretKey = value);
+  void onChange(String value){
+    setState(() => decodedOutput = value);
   }
 
   void dummyOnChange(){
@@ -31,46 +26,41 @@ class ScanCodePageState extends State<ScanCodePage>{
           child: new Center(
             child: new Column(
               children: <Widget>[
+                decodedOutput != ""? {
                 SizedBox(height: 16,),
                 new Row(
                   children: [
                     Expanded(
-                      child: new TextField(
-                        decoration: new InputDecoration(
-                          labelText: "Secret Message",
-                          hintText: "Secret Message",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          ),
-                        ),
-                        onChanged: secretMessageOnChange,
-                        keyboardType: TextInputType.multiline,
-                        minLines: 4,//Normal textInputField will be displayed
-                        maxLines: 5,// when user presses enter it will adapt to it
+                      child: new Text(
+                        decodedOutput, maxLines: 5,
                       ),
                     )
                   ],
                 ),
                 SizedBox(height: 16,),
-                new Row(
+                }
+                    : (
+                    SizedBox(height: 16,)
+                ),
+                new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: new TextField(
-                        decoration: new InputDecoration(
-                          labelText: "Secret Key(Optional)",
-                          hintText: "Secret Key(Optional)",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          ),
+                    Container(
+                      width: 180,
+                      height: 180,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff7c94b6),
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 8,
                         ),
-                        onChanged: secretKeyOnChange,
-                        keyboardType: TextInputType.multiline,
-                        minLines: 2,//Normal textInputField will be displayed
-                        maxLines: 3,// when user presses enter it will adapt to it
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     )
                   ],
                 ),
+                SizedBox(height: 16,),
                 new Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -79,7 +69,7 @@ class ScanCodePageState extends State<ScanCodePage>{
                       onPressed: dummyOnChange,
                       color: Colors.white,
                       disabledColor: Colors.white,
-                      child: new Text("Generate Image",
+                      child: new Text("Scan From Gallery",
                         style: TextStyle(
                           color: Colors.lightGreen,
                           fontSize: 20,

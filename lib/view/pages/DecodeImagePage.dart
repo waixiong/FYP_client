@@ -26,17 +26,22 @@ class DecodeImagePageState extends State<DecodeImagePage>{
           child: new Center(
             child: new Column(
               children: <Widget>[
-                SizedBox(height: 16,),
-                new Row(
-                  children: [
-                    Expanded(
-                      child: new Text(
-                        decodedOutput, maxLines: 5,
-                      ),
-                    )
-                  ],
+                decodedOutput != ""? {
+                  SizedBox(height: 16,),
+                  new Row(
+                    children: [
+                      Expanded(
+                        child: new Text(
+                          decodedOutput, maxLines: 5,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 16,),
+                }
+                : (
+                SizedBox(height: 16,)
                 ),
-                SizedBox(height: 16,),
                 new Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

@@ -13,6 +13,7 @@ class GenerateCodePageState extends State<GenerateCodePage>{
     setState(() => textInput = value);
   }
 
+
   void dummyOnChange(){
 
   }
@@ -26,18 +27,17 @@ class GenerateCodePageState extends State<GenerateCodePage>{
         child: new Center(
           child: new Column(
             children: <Widget>[
-
               SizedBox(height: 16,),
               new Row(
                 children: [
                   Expanded(
                     child: new TextField(
                       decoration: new InputDecoration(
-                          labelText: "Message",
-                          hintText: "Message",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          ),
+                        labelText: "Message",
+                        hintText: "Message",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
                       ),
                       onChanged: onChange,
                       keyboardType: TextInputType.multiline,
@@ -65,6 +65,7 @@ class GenerateCodePageState extends State<GenerateCodePage>{
                   ),
                 ],
               )
+
             ],
           ),
         )

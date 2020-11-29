@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../common/nav/SecretImageTopBar.dart';
 import '../common/nav/QrCodeTopBar.dart';
+import 'package:imageChat/view/pages/chats_list_page.dart';
 import '../common/nav/5n_bottom_bar.dart';
 import '../pages/profile.dart';
 
@@ -29,7 +30,7 @@ class MyHome extends StatelessWidget {
 
           return IndexedStack(
             index: snapshot.data,
-            children: [QRCodeTopBar(), SecretImageTopBar(), ProfileLayout(),],
+            children: [ChatList(), SecretImageTopBar(), QRCodeTopBar(), ProfileLayout(),],
           );
         },
       ),

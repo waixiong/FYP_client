@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 
-class DecodeImagePage extends StatefulWidget {
+class GenerateImagePage extends StatefulWidget {
   @override
-  DecodeImagePageState createState() => new DecodeImagePageState();
+  GenerateImagePageState createState() => new GenerateImagePageState();
 }
 
-class DecodeImagePageState extends State<DecodeImagePage>{
+class GenerateImagePageState extends State<GenerateImagePage>{
 
-  String decodedOutput = "";
+  String secretMessage = "";
+  String secretKey = "";
 
-  void onChange(String value){
-    setState(() => decodedOutput = value);
+  void secretMessageOnChange(String value){
+    setState(() => secretMessage = value);
+  }
+
+  void secretKeyOnChange(String value){
+    setState(() => secretKey = value);
   }
 
   void dummyOnChange(){
@@ -26,35 +31,46 @@ class DecodeImagePageState extends State<DecodeImagePage>{
           child: new Center(
             child: new Column(
               children: <Widget>[
+                SizedBox(height: 16,),
                 new Row(
                   children: [
                     Expanded(
-                      child: new Text(
-                        decodedOutput, maxLines: 5,
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 16,),
-                new Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 180,
-                      height: 180,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff7c94b6),
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 8,
+                      child: new TextField(
+                        decoration: new InputDecoration(
+                          labelText: "Secret Message",
+                          hintText: "Secret Message",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        onChanged: secretMessageOnChange,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 4,//Normal textInputField will be displayed
+                        maxLines: 5,// when user presses enter it will adapt to it
                       ),
                     )
                   ],
                 ),
                 SizedBox(height: 16,),
+                new Row(
+                  children: [
+                    Expanded(
+                      child: new TextField(
+                        decoration: new InputDecoration(
+                          labelText: "Secret Key(Optional)",
+                          hintText: "Secret Key(Optional)",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                          ),
+                        ),
+                        onChanged: secretKeyOnChange,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 2,//Normal textInputField will be displayed
+                        maxLines: 3,// when user presses enter it will adapt to it
+                      ),
+                    )
+                  ],
+                ),
                 new Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -63,7 +79,7 @@ class DecodeImagePageState extends State<DecodeImagePage>{
                       onPressed: dummyOnChange,
                       color: Colors.white,
                       disabledColor: Colors.white,
-                      child: new Text("Decode From Gallery",
+                      child: new Text("Generate Image",
                         style: TextStyle(
                           color: Colors.lightGreen,
                           fontSize: 20,
