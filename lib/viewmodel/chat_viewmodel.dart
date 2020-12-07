@@ -1,3 +1,5 @@
+import 'package:imageChat/service/chat_service.dart';
+
 import '../logger.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -6,6 +8,7 @@ import '../locator.dart';
 
 class ChatViewModel extends BaseViewModel {
   final DialogService _dialogService = locator<DialogService>();
+  final ChatService _chatService = locator<ChatService>();
   ChatUser targetUser;
   ChatUser self;
 
@@ -15,8 +18,9 @@ class ChatViewModel extends BaseViewModel {
   List<ChatMessage> _messages = [];
   List<ChatMessage> get messages => _messages;
 
-  getMessagesByTarget() async {
+  getMessagesByTarget() {
     try {
+      log.i('getMessagesByTarget');
       setBusy(true);
       _messages = [
         ChatMessage(text: 'Hello', user: self, createdAt: DateTime(2020, 8, 12, 14, 26, 59, 999)),
@@ -47,12 +51,13 @@ class ChatViewModel extends BaseViewModel {
 
   postMessage(ChatMessage message) async {
     try {
-      print('\tsend $message');
       setBusy(true);
+      print('\tsend messsage "${message.text}"');
+      await _chatService.sendMessage(message, targetUser.uid);
       _messages.add(message);
       setBusy(false);
     } catch(e) {
-      log.e('init : $e');
+      log.e('err : $e');
       setBusy(false);
     }
     notifyListeners();

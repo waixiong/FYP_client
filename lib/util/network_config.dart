@@ -40,7 +40,7 @@ class API {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
-    if(_access != null) header['Token'] = _access;
+    if(_access != null) header['Authorization'] = _access;
     return header;
   }
 

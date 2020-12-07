@@ -78,6 +78,7 @@ class _ChatPageState extends State<ChatPage> {
       body: ViewModelBuilder<ChatViewModel>.reactive(
         viewModelBuilder: () => ChatViewModel(self: user, targetUser: otherUser),
         onModelReady: (model) {
+          print('ChatPage ChatViewModel init');
           model.getMessagesByTarget();
         },
           builder: (context, model, _) {
