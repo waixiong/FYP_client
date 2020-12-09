@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:imageChat/service/grpc/chat.pbgrpc.dart' as pbChat;
 
 @HiveType(typeId: 0)
-class Message {
+class Message extends HiveObject {
 
   @HiveField(0)
   final String id;

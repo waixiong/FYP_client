@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "237455854433",
+    "firebase_url": "https://imagechat-1fb81.firebaseio.com",
+    "project_id": "imagechat-1fb81",
+    "storage_bucket": "imagechat-1fb81.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237455854433:android:7996d77876099179e91320",
+        "android_client_info": {
+          "package_name": "com.getitqec.imagechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "237455854433-kg94p52lpsllo073b47jsgqrbevsm1dg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.getitqec.imagechat",
+            "certificate_hash": "0a98caed30b1c528a49183ac0ae1d37444a4ce3e"
+          }
+        },
+        {
+          "client_id": "237455854433-ei9gmo654st4i1d3r58rlpip08f4akg8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSkSlnLgRk11a-tTLrrqnHXLU5gousai0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "237455854433-ei9gmo654st4i1d3r58rlpip08f4akg8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

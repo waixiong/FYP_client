@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:hive/hive.dart';
 
-class User {
+@HiveType(typeId: 0)
+class User extends HiveObject {
     User({
         this.id,
         this.name,
@@ -8,9 +10,13 @@ class User {
         this.img,
     });
 
+    @HiveField(0)
     final String id;
+    @HiveField(1)
     final String name;
+    @HiveField(2)
     final String email;
+    @HiveField(3)
     final String img;
 
     factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
