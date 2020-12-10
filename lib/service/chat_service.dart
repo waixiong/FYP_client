@@ -2,16 +2,19 @@ import 'dart:async';
 import 'package:fixnum/fixnum.dart';
 
 import 'package:grpc/grpc.dart';
+import 'package:imageChat/service/db.dart';
 import 'package:imageChat/service/grpc/chat.pbgrpc.dart' as chatpb;
 
 import '../util/validator.dart';
 import 'package:logger/logger.dart';
 import '_exception.dart';
 import 'package:imageChat/model/user.dart';
+import 'package:imageChat/model/message.dart';
 import './auth_service.dart';
-import '../util/network_config.dart';
+import './_hive.dart';
 
 import 'package:dash_chat/dash_chat.dart';
+import 'package:hive/hive.dart';
 
 import '../util/network_config.dart';
 import '../logger.dart';
@@ -24,13 +27,13 @@ class ChatService {
   final int port;
   chatpb.ChatServiceClient _client;
   String _accessToken;
-  CallOptions _callOptions;
+  // CallOptions _callOptions;
 
   ResponseStream<chatpb.Message> _responseStream;
   StreamController<chatpb.ReadMessage> _requestStream;
   StreamSubscription _requestStreamSub;
 
-  void set accessToken(String token) {
+  set accessToken(String token) {
     _accessToken = token;
     _HeaderInterceptor._token = _accessToken;
   }
@@ -48,21 +51,27 @@ class ChatService {
         ),
       )
     );
-    _callOptions = CallOptions(
-      metadata: {
-        'User': locator<AuthService>().user.id,
-        'Authorization': _accessToken
-      }
-    );
+    // _callOptions = CallOptions(
+    //   metadata: {
+    //     // 'User': locator<AuthService>().user.id,
+    //     'Authorization': _accessToken
+    //   }
+    // );
     _client = chatpb.ChatServiceClient(
       _channel, 
-      options: _callOptions,
+      options: CallOptions(
+        metadata: {
+          // 'User': locator<AuthService>().user.id,
+          'Authorization': _accessToken
+        }
+      ),
       interceptors: [_HeaderInterceptor()]
     );
   }
 
   void connect() {
     log.i('connect to gRPC Service');
+    log.d('host: $host:$port');
     _requestStream = StreamController<chatpb.ReadMessage>();
     _responseStream = _client.connect(_requestStream.stream);
     _requestStreamSub = _responseStream.listen(_onIncomingMessage, onError: (err){
@@ -83,7 +92,9 @@ class ChatService {
     m.senderId = message.user.uid?? '';
     m.timestamp = Int64(message.createdAt.millisecondsSinceEpoch);
     log.i('sending');
-    await _client.sendMessage(m);log.i('done');
+    m = await _client.sendMessage(m);
+    locator<DB>().getMessageBox().add(Message.fromProto(m));
+    log.i('done');
   }
 }
 

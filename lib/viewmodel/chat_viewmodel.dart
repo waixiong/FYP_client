@@ -33,6 +33,7 @@ class ChatViewModel extends BaseViewModel {
         ChatMessage(text: 'Can no issue', user: self, createdAt: DateTime(2020, 8, 12, 14, 35, 02, 999)),
         ChatMessage(text: '', user: targetUser, createdAt: DateTime(2020, 8, 12, 14, 37, 21, 999), image: 'https://i.giphy.com/media/fWfowxJtHySJ0SGCgN/giphy.webp'),
       ];
+      _chatService.connect();
       setBusy(false);
     } catch(e) {
       log.e('init : $e');

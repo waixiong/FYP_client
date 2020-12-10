@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:imageChat/service/chat_service.dart';
+import 'package:imageChat/service/notification/push_notification.dart';
 import '../util/validator.dart';
 import 'package:logger/logger.dart';
 import '_exception.dart';
-import 'package:user_repository/user_repository.dart';
 import 'package:imageChat/model/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -61,7 +61,9 @@ class AuthService extends ChangeNotifier {
         this.user = u;
         _status = AuthStatus.Authenticated;
         locator<API>().setAuthorization(googleAuth.accessToken, '');
+        setupChatService();
         locator<ChatService>().accessToken = googleAuth.accessToken;
+        locator<PushNotificationsManager>().init();
         notifyListeners();
         return result["exist"];
       } catch(e) {
@@ -102,7 +104,9 @@ class AuthService extends ChangeNotifier {
         this.user = User.fromJson(result["user"]);
         _status = AuthStatus.Authenticated;
         locator<API>().setAuthorization(googleAuth.accessToken, '');
+        setupChatService();
         locator<ChatService>().accessToken = googleAuth.accessToken;
+        locator<PushNotificationsManager>().init();
         notifyListeners();
         return result["exist"];
       } catch(e) {

@@ -1,5 +1,8 @@
+import 'package:dash_chat/dash_chat.dart';
 import 'package:hive/hive.dart';
 import 'package:imageChat/service/grpc/chat.pbgrpc.dart' as pbChat;
+
+part 'message.g.dart';
 
 @HiveType(typeId: 0)
 class Message extends HiveObject {
@@ -54,6 +57,10 @@ class Message extends HiveObject {
       time: DateTime.fromMillisecondsSinceEpoch(int.parse(m['timestamp'])),
       read: m['read']
     );
+  }
+
+  ChatMessage toChatMessage() {
+    ChatMessage(text: text, user: null);
   }
 }
 

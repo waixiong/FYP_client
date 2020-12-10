@@ -1,4 +1,4 @@
-package com.getitqec.imageChat
+package com.getitqec.imagechat
 
 import io.flutter.app.FlutterApplication
 import io.flutter.plugin.common.PluginRegistry
