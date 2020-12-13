@@ -71,6 +71,7 @@ class GenerateImagePageState extends State<GenerateImagePage>{
                     )
                   ],
                 ),
+                SizedBox(height: 16,),
                 new Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

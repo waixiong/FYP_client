@@ -72,8 +72,8 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(otherUser.name, style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
+        backgroundColor: Colors.blue,
+        title: Text(otherUser.name, style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white),),
       ),
       body: ViewModelBuilder<ChatViewModel>.reactive(
         viewModelBuilder: () => ChatViewModel(self: user, targetUser: otherUser),

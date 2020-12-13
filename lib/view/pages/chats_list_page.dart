@@ -70,12 +70,13 @@ class _ChatListState extends State<ChatList> {
     return Scaffold(
       // extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("Messaging", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
+        backgroundColor: Colors.blue,
+        title: Text("Messaging", style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white),),
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(10.0),
-        itemBuilder: (context, index) => ListTile(
+        itemBuilder: (context, index) => Card(
+          child:ListTile(
           leading: CircleAvatar(
             radius: 8.0 * 5,
             backgroundImage: NetworkImage('https://yeez.getitqec.com/icons/y_192.webp'), // 'assets/profile.jpg'
@@ -85,6 +86,7 @@ class _ChatListState extends State<ChatList> {
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatPage()));
           },
+        ),
         ),
         itemCount: 1,
       ),
