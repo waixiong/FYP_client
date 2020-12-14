@@ -75,12 +75,12 @@ class ChatService {
     _requestStream = StreamController<chatpb.ReadMessage>();
     _responseStream = _client.connect(_requestStream.stream);
     _requestStreamSub = _responseStream.listen(_onIncomingMessage, onError: (err){
-      log.e(err);
+      log.e('[connect] $err');
     });
   }
 
   void _onIncomingMessage(chatpb.Message message) {
-    log.i(message.text);
+    log.i('[_onIncomingMessage] '+message.text);
   }
 
   Future<void> sendMessage(ChatMessage message, String receiverId) async {
@@ -93,7 +93,7 @@ class ChatService {
     m.timestamp = Int64(message.createdAt.millisecondsSinceEpoch);
     log.i('sending');
     m = await _client.sendMessage(m);
-    locator<DB>().getMessageBox().add(Message.fromProto(m));
+    locator<DB>().addMessage(Message.fromProto(m));
     log.i('done');
   }
 }

@@ -18,9 +18,10 @@ void setupLocator() {
   // for services or viewmodels that needs to be kept alive throughout the app
 
   locator.registerLazySingleton(() => DialogService());
+  locator.registerLazySingleton(() => SnackbarService());
   locator.registerLazySingleton(() => NavigationService());
 
-  locator.registerLazySingleton(() => DB());
+  // locator.registerLazySingleton(() => DB());
 
   locator.registerLazySingleton(() => API());
   locator.registerLazySingleton(() => AuthService(service: 'https://imagechat.getitqec.com'));
@@ -39,4 +40,11 @@ void setupChatService() {
     log.i('No type ChatService is registered inside GetIt.');
   }
   locator.registerLazySingleton(() => ChatService(host: 'imagechat.getitqec.com', port: 2053)..connect());
+
+  try {
+    locator.unregister(instance: locator<DB>());
+  } catch(e) {
+    log.i('No type ChatService is registered inside GetIt.');
+  }
+  locator.registerLazySingleton(() => DB());
 }
