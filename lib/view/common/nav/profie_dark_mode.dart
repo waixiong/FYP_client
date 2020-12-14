@@ -24,7 +24,7 @@ class ProfileDarkMode extends StatelessWidget {
     //     ),
     //   ),
     // );
-
+    // return Icon(LineAwesomeIcons.user_circle,);
     return ValueListenableBuilder(
       valueListenable: hive.listenable(keys: ['isDark']),
       builder: (context, _, __) => GestureDetector(

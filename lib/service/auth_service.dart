@@ -138,4 +138,44 @@ class AuthService extends ChangeNotifier {
     locator<API>().setAuthorization(null, null);
     notifyListeners();
   }
+
+  // return boolean, whether is a first time user
+  Future<User> getUser(String id) async {
+    try {
+      try {
+        Map<String, dynamic> result = await locator<API>().get(service, '/api/user/user/$id');
+        var user = User.fromJson(result);
+        return user;
+      } catch(e) {
+        print('--- API ERR ---');
+        _status = AuthStatus.Unauthenticated;
+        notifyListeners();
+        log.e(e);
+        throw(checkServiceError(e));
+      }
+    } catch(e) {
+      print('--- getUser Err ---');
+      throw(e);
+    }
+  }
+
+  Future<User> searchUser(String word) async {
+    // use email
+    try {
+      try {
+        Map<String, dynamic> result = await locator<API>().get(service, '/api/user/search/$word');
+        var user = User.fromJson(result);
+        return user;
+      } catch(e) {
+        print('--- API ERR ---');
+        _status = AuthStatus.Unauthenticated;
+        notifyListeners();
+        log.e(e);
+        throw(checkServiceError(e));
+      }
+    } catch(e) {
+      print('--- getUser Err ---');
+      throw(e);
+    }
+  }
 }

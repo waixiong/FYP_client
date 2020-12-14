@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dash_chat/dash_chat.dart';
 import 'package:hive/hive.dart';
 
 part 'user.g.dart';
@@ -43,6 +44,12 @@ class User extends HiveObject {
   String toString() {
     return name;
   }
+
+  ChatUser toChatUser() => ChatUser(
+    uid: id,
+    name: name,
+    avatar: img,
+  );
 
   @override
   // TODO: implement hashCode
