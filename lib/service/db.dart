@@ -91,16 +91,22 @@ class DB extends ChangeNotifier {
     //   timekey = '0' + timekey;
     // }
     // await box.put(timekey + message.id, message);
+    var old = await box.get(message.id);
     await box.put(message.id, message);
     _messages[message.id] = message;
     // box.add(message);
     String target = message.receiverId == locator<AuthService>().user.id? message.senderId : message.receiverId;
     // _messages[target].add(message);
     
-    var mBox = Hive.box<List<String>>(HiveBoxes.userMessages);
-    var messageList = mBox.get(target);
-    messageList.add(message.id);
-    mBox.put(target, messageList);
+    if(old == null) {
+      log.i('\tadd to user');
+      var mBox = Hive.box<List<String>>(HiveBoxes.userMessages);
+      var messageList = mBox.get(target);
+      messageList.add(message.id);
+      mBox.put(target, messageList);
+    } else {
+      log.i('\tmessage exist');
+    }
     _lastMessage.remove(target);
     _lastMessage[target] = message;
     log.i('After add message, $_lastMessage');

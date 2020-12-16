@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:imageChat/view/pages/optical_label_page.dart';
 import '../common/nav/SecretImageTopBar.dart';
 import '../common/nav/QrCodeTopBar.dart';
 import 'package:imageChat/view/pages/chats_list_page.dart';
 import '../common/nav/5n_bottom_bar.dart';
 import '../pages/profile.dart';
+import 'secret_image_page.dart';
 
 class MyHome extends StatelessWidget {
   final bottomNav = FiveNBottomBar();
@@ -30,7 +32,14 @@ class MyHome extends StatelessWidget {
 
           return IndexedStack(
             index: snapshot.data,
-            children: [ChatList(), SecretImageTopBar(), QRCodeTopBar(), ProfileLayout(),],
+            children: [
+              ChatList(),
+              // SecretImageTopBar(),
+              SecretImagePage(),
+              // QRCodeTopBar(),
+              OpticalLabelPage(),
+              ProfileLayout(),
+            ],
           );
         },
       ),

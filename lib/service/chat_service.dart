@@ -72,6 +72,9 @@ class ChatService {
   void connect() {
     log.i('connect to gRPC Service');
     log.d('host: $host:$port');
+    if(_requestStream != null && !_requestStream.isClosed) _requestStream.close();
+    if(_responseStream != null) _responseStream.cancel();
+    if(_requestStreamSub != null && !_requestStreamSub.isPaused) _requestStreamSub.cancel();
     _requestStream = StreamController<chatpb.ReadMessage>();
     _responseStream = _client.connect(_requestStream.stream);
     _requestStreamSub = _responseStream.listen(_onIncomingMessage, onError: (err){
@@ -79,8 +82,15 @@ class ChatService {
     });
   }
 
-  void _onIncomingMessage(chatpb.Message message) {
+  Future<void> _onIncomingMessage(chatpb.Message message) async {
     log.i('[_onIncomingMessage] '+message.text);
+    if(message.senderId == message.receiverId) {
+      await Future.delayed(Duration(milliseconds: 300));
+    }
+    locator<DB>().addMessage(Message.fromProto(message));
+      log.i('added');
+    _requestStream.add(chatpb.ReadMessage()..id = message.id);
+    // print(_requestStream.hasListener);
   }
 
   Future<void> sendMessage(ChatMessage message, String receiverId) async {
@@ -95,6 +105,16 @@ class ChatService {
     m = await _client.sendMessage(m);
     locator<DB>().addMessage(Message.fromProto(m));
     log.i('done');
+  }
+
+  void receiveMessage(Message message) {
+    _requestStream.add(chatpb.ReadMessage()..id = message.id);
+  }
+
+  dispose() {
+    if(_requestStream != null && !_requestStream.isClosed) _requestStream.close();
+    if(_responseStream != null) _responseStream.cancel();
+    if(_requestStreamSub != null) _requestStreamSub.cancel();
   }
 }
 

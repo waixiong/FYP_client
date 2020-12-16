@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:imageChat/locator.dart';
 import 'package:imageChat/service/auth_service.dart';
+import 'package:imageChat/view/pages/secret_image_encode_page.dart';
 
 import '../../viewmodel/chat_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -162,25 +163,26 @@ class _ChatPageState extends State<ChatPage> {
                 trailing: <Widget>[
                   IconButton(
                     icon: Icon(Icons.photo),
-                    onPressed: () async {
-                      File result = await ImagePicker.pickImage(
-                        source: ImageSource.gallery,
-                        imageQuality: 80,
-                        maxHeight: 400,
-                        maxWidth: 400,
-                      );
+                    // onPressed: () async {
+                    //   File result = await ImagePicker.pickImage(
+                    //     source: ImageSource.gallery,
+                    //     imageQuality: 80,
+                    //     maxHeight: 400,
+                    //     maxWidth: 400,
+                    //   );
 
-                      if (result != null) {
-                        // TODO: set text
-                        // TODO: send image
-                        // TODO: set url
+                    //   if (result != null) {
+                    //     // TODO: set text
+                    //     // TODO: send image
+                    //     // TODO: set url
 
-                        ChatMessage message =
-                            ChatMessage(text: 'See the natural', user: model.self, image: 'https://file.angelmortal.xyz/file/testBuc/test_testwebpicture');
-                        model.postMessage(message);
-                        // TODO: upload
-                      }
-                    },
+                    //     ChatMessage message =
+                    //         ChatMessage(text: 'See the natural', user: model.self, image: 'https://file.angelmortal.xyz/file/testBuc/test_testwebpicture');
+                    //     model.postMessage(message);
+                    //     // TODO: upload
+                    //   }
+                    // },
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SecretImageEncodeFullPage())),
                   )
                 ],
               );

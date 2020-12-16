@@ -51,7 +51,10 @@ dependencies:
   grpc: ^2.8.0
   # file_picker: ^2.0.0
   # open_file: ^3.0.3
+  imagechat_native_opencv:
+    path: imagechat_native_opencv
   firebase_messaging: ^7.0.3
+  
 
 dev_dependencies:
   flutter_test:

@@ -33,13 +33,18 @@ void setupLocator() {
   locator.registerLazySingleton(() => PushNotificationsManager());
 }
 
-void setupChatService() {
+void setupChatService(String accessToken) {
   try {
     locator.unregister(instance: locator<ChatService>());
   } catch(e) {
     log.i('No type ChatService is registered inside GetIt.');
   }
-  locator.registerLazySingleton(() => ChatService(host: 'imagechat.getitqec.com', port: 2053)..connect());
+  // ChatService s = ChatService(host: '192.168.1.114', port: 8100);
+  ChatService s = ChatService(host: 'imagechat.getitqec.com', port: 2053);
+  // locator.registerLazySingleton(() => ChatService(host: 'imagechat.getitqec.com', port: 2053)..connect());
+  locator.registerLazySingleton(() => s);
+  s.accessToken = accessToken;
+  s.connect();
 
   try {
     locator.unregister(instance: locator<DB>());

@@ -61,9 +61,9 @@ class AuthService extends ChangeNotifier {
         this.user = u;
         _status = AuthStatus.Authenticated;
         locator<API>().setAuthorization(googleAuth.accessToken, '');
-        setupChatService();
-        locator<ChatService>().accessToken = googleAuth.accessToken;
+        // locator<ChatService>().accessToken = googleAuth.accessToken;
         locator<PushNotificationsManager>().init();
+        setupChatService(googleAuth.accessToken);
         notifyListeners();
         return result["exist"];
       } catch(e) {
@@ -104,9 +104,9 @@ class AuthService extends ChangeNotifier {
         this.user = User.fromJson(result["user"]);
         _status = AuthStatus.Authenticated;
         locator<API>().setAuthorization(googleAuth.accessToken, '');
-        setupChatService();
-        locator<ChatService>().accessToken = googleAuth.accessToken;
+        // locator<ChatService>().accessToken = googleAuth.accessToken;
         locator<PushNotificationsManager>().init();
+        setupChatService(googleAuth.accessToken);
         notifyListeners();
         return result["exist"];
       } catch(e) {
