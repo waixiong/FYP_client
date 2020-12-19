@@ -4,6 +4,9 @@ import 'package:imageChat/service/chat_service.dart';
 import 'package:imageChat/service/db.dart';
 import 'package:imageChat/view/pages/secret_image_decode_page.dart';
 
+import 'package:imagechat_native_opencv/delaunator_pattern.dart' as DelaunatorPattern;
+import 'package:imagechat_native_opencv/imagechat.dart' as nativeCV;
+
 import '../logger.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -57,6 +60,20 @@ class ChatViewModel extends BaseViewModel {
 
   init() async {
     setBusy(true);
+    try {
+      String output = DelaunatorPattern.encodeDelaunatorPattern('hello world', tempDir.path + '/img.webp');
+      log.i('OpenCV: '+output);
+    } catch(e) {
+      log.e('ImageChat Err');
+      log.e(e);
+    }
+    try {
+      String output = nativeCV.opencvVersion();
+      log.i('OpenCV Version: '+output);
+    } catch(e) {
+      log.e('Native Err');
+      log.e(e);
+    }
     var userMessageBox = db.getUserMessagesBox();
     _messageListener = userMessageBox.listenable(keys: [targetUser.uid]);
     _messageListener.addListener(() async {
