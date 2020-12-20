@@ -45,13 +45,22 @@ dependencies:
   line_awesome_flutter: ^1.0.1
   auto_size_text: ^2.1.0
   salomon_bottom_bar: ^2.0.0
+  
   dash_chat: ^1.1.14
   image_picker: ^0.6.7+4
-
+  grpc: ^2.8.0
+  # file_picker: ^2.0.0
+  # open_file: ^3.0.3
+  imagechat_native_opencv:
+    path: imagechat_native_opencv
+  firebase_messaging: ^7.0.3
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  hive_generator: ^0.8.2
+  build_runner: ^1.10.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

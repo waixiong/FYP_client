@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../pages/ScanCodePage.dart';
 import '../../pages/GenerateCodePage.dart';
 
+// @Sia
 class QRCodeTopBar extends StatefulWidget {
   @override
   _QRCodeTopBarState createState() => new _QRCodeTopBarState();

@@ -15,10 +15,9 @@ import './logger.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupLocator();
   await Hive.initFlutter();
   await Hive.openBox('0');
-  await Hive.openBox<String>('stockList');
+  setupLocator();
   runApp(MyMain());
 }
 

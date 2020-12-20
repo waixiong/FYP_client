@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:imageChat/locator.dart';
 import 'package:imageChat/service/auth_service.dart';
+import 'package:imageChat/view/pages/secret_image_encode_page.dart';
 
 import '../../viewmodel/chat_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,10 @@ import 'package:stacked/stacked.dart';
 // void main() => runApp(MyApp());
 
 class ChatPage extends StatefulWidget {
+  final ChatUser target;
+  final ChatUser self;
+  ChatPage({@required this.self, @required this.target});
+
   @override
   _ChatPageState createState() => _ChatPageState();
 }
@@ -22,17 +27,17 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
 
-  final ChatUser user = ChatUser(
-    name: "WXiong Chee",
-    uid: locator<AuthService>().user.id,
-    avatar: locator<AuthService>().user.img,
-  );
+  // final ChatUser user = ChatUser(
+  //   name: "WXiong Chee",
+  //   uid: locator<AuthService>().user.id,
+  //   avatar: locator<AuthService>().user.img,
+  // );
 
-  final ChatUser otherUser = ChatUser(
-    name: "Yeez",
-    uid: "25649654",
-    avatar: 'https://yeez.getitqec.com/icons/y_192.webp',
-  );
+  // final ChatUser otherUser = ChatUser(
+  //   name: "Yeez",
+  //   uid: "25649654",
+  //   avatar: 'https://yeez.getitqec.com/icons/y_192.webp',
+  // );
 
   // List<ChatMessage> messages = List<ChatMessage>();
   var m = List<ChatMessage>();
@@ -72,13 +77,15 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text(otherUser.name, style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white),),
+        backgroundColor: Colors.white,
+        title: Text(widget.target.name, style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
+        iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
       ),
       body: ViewModelBuilder<ChatViewModel>.reactive(
-        viewModelBuilder: () => ChatViewModel(self: user, targetUser: otherUser),
+        viewModelBuilder: () => ChatViewModel(self: widget.self, targetUser: widget.target),
         onModelReady: (model) {
-          model.getMessagesByTarget();
+          print('ChatPage ChatViewModel init');
+          model.init();
         },
           builder: (context, model, _) {
             if (model.isBusy) {
@@ -93,12 +100,12 @@ class _ChatPageState extends State<ChatPage> {
               // List<DocumentSnapshot> items = snapshot.data.documents;
               // var messages = ;
               return DashChat(
-                key: _chatViewKey,
+                key: model.chatViewKey,
                 inverted: false,
                 onSend: model.postMessage,
                 sendOnEnter: true,
                 textInputAction: TextInputAction.send,
-                user: user,
+                user: model.self,
                 inputDecoration:
                     InputDecoration.collapsed(hintText: "Add message here..."),
                 dateFormat: DateFormat('yyyy-MMM-dd'),
@@ -156,25 +163,26 @@ class _ChatPageState extends State<ChatPage> {
                 trailing: <Widget>[
                   IconButton(
                     icon: Icon(Icons.photo),
-                    onPressed: () async {
-                      File result = await ImagePicker.pickImage(
-                        source: ImageSource.gallery,
-                        imageQuality: 80,
-                        maxHeight: 400,
-                        maxWidth: 400,
-                      );
+                    // onPressed: () async {
+                    //   File result = await ImagePicker.pickImage(
+                    //     source: ImageSource.gallery,
+                    //     imageQuality: 80,
+                    //     maxHeight: 400,
+                    //     maxWidth: 400,
+                    //   );
 
-                      if (result != null) {
-                        // TODO: set text
-                        // TODO: send image
-                        // TODO: set url
+                    //   if (result != null) {
+                    //     // TODO: set text
+                    //     // TODO: send image
+                    //     // TODO: set url
 
-                        ChatMessage message =
-                            ChatMessage(text: 'See the natural', user: user, image: 'https://file.angelmortal.xyz/file/testBuc/test_testwebpicture');
-                        model.postMessage(message);
-                        // TODO: upload
-                      }
-                    },
+                    //     ChatMessage message =
+                    //         ChatMessage(text: 'See the natural', user: model.self, image: 'https://file.angelmortal.xyz/file/testBuc/test_testwebpicture');
+                    //     model.postMessage(message);
+                    //     // TODO: upload
+                    //   }
+                    // },
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SecretImageEncodeFullPage())),
                   )
                 ],
               );

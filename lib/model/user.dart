@@ -1,39 +1,59 @@
 import 'dart:convert';
+import 'package:dash_chat/dash_chat.dart';
+import 'package:hive/hive.dart';
 
-class User {
-    User({
-        this.id,
-        this.name,
-        this.email,
-        this.img,
-    });
+part 'user.g.dart';
 
-    final String id;
-    final String name;
-    final String email;
-    final String img;
+@HiveType(typeId: 0)
+class User extends HiveObject {
+  User({
+      this.id,
+      this.name,
+      this.email,
+      this.img,
+  });
 
-    factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
+  @HiveField(0)
+  final String id;
+  @HiveField(1)
+  final String name;
+  @HiveField(2)
+  final String email;
+  @HiveField(3)
+  final String img;
 
-    String toRawJson() => json.encode(toJson());
+  factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
 
-    factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["id"],
-        name: json["name"],
-        email: json["email"],
-        img: json["img"],
-    );
+  String toRawJson() => json.encode(toJson());
 
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "email": email,
-        "img": img,
-    };
+  factory User.fromJson(Map<String, dynamic> json) => User(
+      id: json["id"],
+      name: json["name"],
+      email: json["email"],
+      img: json["img"],
+  );
 
-    @override
+  Map<String, dynamic> toJson() => {
+      "id": id,
+      "name": name,
+      "email": email,
+      "img": img,
+  };
+
+  @override
   String toString() {
-    // TODO: implement toString
     return name;
   }
+
+  ChatUser toChatUser() => ChatUser(
+    uid: id,
+    name: name,
+    avatar: img,
+  );
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => id.hashCode;
+
+  operator ==(Object o) => o.hashCode == hashCode;
 }

@@ -6,90 +6,81 @@ import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'package:imageChat/locator.dart';
 import 'package:imageChat/view/pages/chat_page.dart';
+import 'package:imageChat/view/pages/search_user_page.dart';
+import 'package:imageChat/viewmodel/chatlist_viewmodel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:provider/provider.dart';
+import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:stacked_themes/stacked_themes.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-StreamController<List<Map<dynamic, dynamic>>> chatStreamController = StreamController<List<Map<dynamic, dynamic>>>();
-Stream<List<Map<dynamic, dynamic>>> chatStream() {
-  return chatStreamController.stream;
-}
-
-class ChatList extends StatefulWidget {
-  ChatList({Key key, @required this.self}) : super(key: key) {
+class ChatList extends StatelessWidget {
+  ChatList({Key key}) : super(key: key) {
     //
   }
-
-  // final String name;
-  final ChatUser self;
-
-  @override
-  _ChatListState createState() => _ChatListState();
-}
-
-class _ChatListState extends State<ChatList> {
-  final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
-
-  List<ChatMessage> messages = List<ChatMessage>();
-  var m = List<ChatMessage>();
-  var i = 0;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void openChat(BuildContext context) {
-    //
-  }
-
-  // Widget chatWidget(BuildContext context, Chat chat) {
-  //   if(chat is DirectChat) {
-  //     return ListTile(
-  //       leading: Icon(Icons.person),
-  //       title: Text('${chat.participant.name}'),
-  //       subtitle: Text('message'),
-  //       onTap: () {
-  //         Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatWidget(chat: chat, self: widget.self,)));
-  //       },
-  //     );
-  //   } else if(chat is GroupChat) {
-  //     return ListTile(
-  //       leading: Icon(Icons.people),
-  //       title: Text('${chat.name}'),
-  //       subtitle: Text('message'),
-  //     );
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text("Messaging", style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white),),
-      ),
-      body: ListView.builder(
-        padding: EdgeInsets.all(10.0),
-        itemBuilder: (context, index) => Card(
-          child:ListTile(
-          leading: CircleAvatar(
-            radius: 8.0 * 5,
-            backgroundImage: NetworkImage('https://yeez.getitqec.com/icons/y_192.webp'), // 'assets/profile.jpg'
+    
+    return ViewModelBuilder<ChatListViewModel>.reactive(
+      viewModelBuilder: () => ChatListViewModel(),
+      onModelReady: (model) => model.init(),
+      builder: (context, model, _) {
+        return Scaffold(
+          // extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: Text("Messaging", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
+            iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+            actions: [
+              Padding(
+                padding: EdgeInsets.all(9),
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchUserPage())),
+                  child: Icon(Icons.person_add, color: Theme.of(context).backgroundColor,),
+                ),
+              )
+            ],
           ),
-          title: Text('Yeez'),
-          subtitle: Text('Yeez Digital Menu'),
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatPage()));
-          },
-        ),
-        ),
-        itemCount: 1,
-      ),
+          body: model.isBusy
+            ? Center(
+              child: SizedBox(
+                width: 48, height: 48,
+                child: CircularProgressIndicator(),
+              ),
+            )
+            : model.users.length == 0
+              ? Center(
+                child: Text('No message'),
+              )
+              : ListView.builder(
+                padding: EdgeInsets.all(10.0),
+                itemBuilder: (context, index) {
+                  print(model.users[index].toJson());
+                  print(model.messagesList[model.users[index]]);
+                  return ListTile(
+                    leading: CircleAvatar(
+                      radius: 8.0 * 5,
+                      backgroundImage: NetworkImage(model.users[index].avatar), // 'assets/profile.jpg'
+                    ),
+                    title: Text(model.users[index].name),
+                    subtitle: Text(
+                      model.messagesList[model.users[index]] == null? 'No messages' :
+                          model.messagesList[model.users[index]].image == null? model.messagesList[model.users[index]].text : '[Image] ' 
+                            + model.messagesList[model.users[index]].text),
+                    onTap: () {
+                      model.navigateToChat(model.users[index]);
+                      // Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatPage()));
+                    },
+                  );
+                },
+                itemCount: model.users.length,
+              ),
+        );
+      }
     );
   }
 }

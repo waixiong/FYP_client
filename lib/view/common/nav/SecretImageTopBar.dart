@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../pages/DecodeImagePage.dart';
 import '../../pages/GenerateImagePage.dart';
 
+// @Sia
 class SecretImageTopBar extends StatefulWidget {
   @override
   _SecretImageTopBarState createState() => new _SecretImageTopBarState();

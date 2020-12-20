@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:imageChat/service/chat_service.dart';
+import 'package:imageChat/service/notification/push_notification.dart';
 import '../util/validator.dart';
 import 'package:logger/logger.dart';
 import '_exception.dart';
-import 'package:user_repository/user_repository.dart';
 import 'package:imageChat/model/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -60,6 +61,9 @@ class AuthService extends ChangeNotifier {
         this.user = u;
         _status = AuthStatus.Authenticated;
         locator<API>().setAuthorization(googleAuth.accessToken, '');
+        // locator<ChatService>().accessToken = googleAuth.accessToken;
+        locator<PushNotificationsManager>().init();
+        setupChatService(googleAuth.accessToken);
         notifyListeners();
         return result["exist"];
       } catch(e) {
@@ -100,6 +104,9 @@ class AuthService extends ChangeNotifier {
         this.user = User.fromJson(result["user"]);
         _status = AuthStatus.Authenticated;
         locator<API>().setAuthorization(googleAuth.accessToken, '');
+        // locator<ChatService>().accessToken = googleAuth.accessToken;
+        locator<PushNotificationsManager>().init();
+        setupChatService(googleAuth.accessToken);
         notifyListeners();
         return result["exist"];
       } catch(e) {
@@ -130,5 +137,45 @@ class AuthService extends ChangeNotifier {
     _status = AuthStatus.Unauthenticated;
     locator<API>().setAuthorization(null, null);
     notifyListeners();
+  }
+
+  // return boolean, whether is a first time user
+  Future<User> getUser(String id) async {
+    try {
+      try {
+        Map<String, dynamic> result = await locator<API>().get(service, '/api/user/user/$id');
+        var user = User.fromJson(result);
+        return user;
+      } catch(e) {
+        print('--- API ERR ---');
+        _status = AuthStatus.Unauthenticated;
+        notifyListeners();
+        log.e(e);
+        throw(checkServiceError(e));
+      }
+    } catch(e) {
+      print('--- getUser Err ---');
+      throw(e);
+    }
+  }
+
+  Future<User> searchUser(String word) async {
+    // use email
+    try {
+      try {
+        Map<String, dynamic> result = await locator<API>().get(service, '/api/user/search/$word');
+        var user = User.fromJson(result);
+        return user;
+      } catch(e) {
+        print('--- API ERR ---');
+        _status = AuthStatus.Unauthenticated;
+        notifyListeners();
+        log.e(e);
+        throw(checkServiceError(e));
+      }
+    } catch(e) {
+      print('--- getUser Err ---');
+      throw(e);
+    }
   }
 }
