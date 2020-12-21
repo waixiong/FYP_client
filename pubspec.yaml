@@ -52,8 +52,9 @@ dependencies:
   # file_picker: ^2.0.0
   # open_file: ^3.0.3
   imagechat_native_opencv:
-    path: imagechat_native_opencv
+    path: ./imagechat_native_opencv
   firebase_messaging: ^7.0.3
+  path_provider: ^1.6.24
   
 
 dev_dependencies:

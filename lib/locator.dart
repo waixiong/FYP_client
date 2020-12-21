@@ -8,14 +8,19 @@ import './service/notification/messaging_token.dart';
 import './service/notification/push_notification.dart';
 import './util/network_config.dart';
 import 'logger.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 // import 'core/services/database.dart';
 
 GetIt locator = GetIt.instance;
 final log = getLogger('locator');
 
+Directory tempDir;
+
 void setupLocator() {
   // for services or viewmodels that needs to be kept alive throughout the app
+  getTemporaryDirectory().then((dir) => tempDir = dir);
 
   locator.registerLazySingleton(() => DialogService());
   locator.registerLazySingleton(() => SnackbarService());

@@ -8,6 +8,8 @@
 #include <android/log.h>
 #endif
 
+#include "delaunator_pattern.cpp"
+
 using namespace cv;
 using namespace std;
 
@@ -251,6 +253,8 @@ extern "C" {
     __attribute__((visibility("default"))) __attribute__((used))
     const char* version() {
         return CV_VERSION;
+        // char* r = CV_VERSION;
+        // return r;
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
