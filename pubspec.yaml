@@ -55,7 +55,7 @@ dependencies:
     path: ./imagechat_native_opencv
   firebase_messaging: ^7.0.3
   path_provider: ^1.6.24
-  
+  image_downloader: ^0.20.1
 
 dev_dependencies:
   flutter_test:

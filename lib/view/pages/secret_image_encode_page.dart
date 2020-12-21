@@ -29,11 +29,13 @@ class SecretImageEncodePage extends StatelessWidget {
                         decoration: InputDecoration(
                           labelText: 'Input Text',
                         ),
+                        controller: model.inputText,
                       ),
                       TextField(
                         decoration: InputDecoration(
                           labelText: 'Secret Key (optional)',
                         ),
+                        controller: model.secretText,
                       ),
                     ],
                   ),
@@ -43,35 +45,49 @@ class SecretImageEncodePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     FlatButton(
-                      onPressed: () {}, 
+                      onPressed: model.clear, 
                       child: Text('Clear')
                     ),
                     RaisedButton(
-                      onPressed: () {},
+                      onPressed: model.encode,
                       child: Text('Encode Image'),
                     )
                   ],
                 ),
-                SizedBox(height: 9,),
-                Text('Output Image'),
-                Container(
-                  height: 200,
-                  color: Colors.grey,
-                  child: Center(child: Text('Image'),),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    FlatButton(
-                      onPressed: () {}, 
-                      child: Text('Save')
+                if(model.busy("encode")) 
+                  Container()
+                else
+                  if(model.outputImg != null)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 9,),
+                        Container(
+                          height: 200,
+                          color: Colors.grey,
+                          child: Center(
+                            child: Image.memory(
+                              model.outputImg.file.readAsBytesSync(),
+                              alignment: Alignment.center,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            FlatButton(
+                              onPressed: () {}, 
+                              child: Text('Save')
+                            ),
+                            RaisedButton(
+                              onPressed: () {},
+                              child: Text('Send'),
+                            )
+                          ],
+                        )
+                      ],
                     ),
-                    RaisedButton(
-                      onPressed: () {},
-                      child: Text('Send'),
-                    )
-                  ],
-                ),
               ],
             ),
           );

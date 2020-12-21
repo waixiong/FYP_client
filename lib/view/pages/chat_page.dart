@@ -97,12 +97,10 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               );
             } else {
-              // List<DocumentSnapshot> items = snapshot.data.documents;
-              // var messages = ;
-              return Image.file(
-                File(tempDir.path + '/img.webp'),
-                alignment: Alignment.center,
-              );
+              // return Image.file(
+              //   File(tempDir.path + '/img.webp'),
+              //   alignment: Alignment.center,
+              // );
               return DashChat(
                 key: model.chatViewKey,
                 inverted: false,
