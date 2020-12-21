@@ -74,6 +74,19 @@ using namespace std;
 //     // imwrite("./img.webp", img);
 // }
 
+InfInt BigIntFromBytes(char* array) {
+    InfInt num = InfInt();
+    // BigInteger num2 = BigInteger(array, 0, 1);
+    // cout << "\t\t" << strlen(array) << "\n";
+    for(size_t i = 0; i < strlen(array); i++) {
+        num *= 256;
+        // cout << "\t\t\t" << array[strlen(array)-1-i] << "\n";
+        num += array[strlen(array)-1-i];
+        // cout << "\t\t" << num << "\n";
+    }
+    return num;
+}
+
 char* appendEndOfFile(char* array)
 {
     size_t len = strlen(array);
@@ -102,7 +115,8 @@ Mat imgGenerator(delaunator::Delaunator d, char* inputData, long maxSize) {
     Mat img = Mat::zeros( maxSize, maxSize, CV_8UC3 );
     // Mat img = Mat::zeros( maxSize, maxSize, 3);
 
-    InfInt data = InfInt(inputData);
+    // InfInt data = InfInt(inputData);
+    InfInt data = BigIntFromBytes(inputData);
     
     for (size_t i = 0; i < triangles.size(); i++) {
         // cout << triangles[i][0] << " " << triangles[i][1] << " " << triangles[i][2] << " \n" ;
