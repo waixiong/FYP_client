@@ -17,10 +17,12 @@ GetIt locator = GetIt.instance;
 final log = getLogger('locator');
 
 Directory tempDir;
+Directory externalDir;
 
 void setupLocator() {
   // for services or viewmodels that needs to be kept alive throughout the app
   getTemporaryDirectory().then((dir) => tempDir = dir);
+  getExternalStorageDirectory().then((dir) => externalDir = dir);
 
   locator.registerLazySingleton(() => DialogService());
   locator.registerLazySingleton(() => SnackbarService());
