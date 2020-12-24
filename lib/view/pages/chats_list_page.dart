@@ -85,6 +85,70 @@ class ChatList extends StatelessWidget {
   }
 }
 
+class ChatListChoice extends StatelessWidget {
+  ChatListChoice({Key key}) : super(key: key) {
+    //
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return ViewModelBuilder<ChatListViewModel>.reactive(
+      viewModelBuilder: () => ChatListViewModel(),
+      onModelReady: (model) => model.init(),
+      builder: (context, model, _) {
+        return Scaffold(
+          // extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: Text("Send To", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
+            iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+            actions: [
+              Padding(
+                padding: EdgeInsets.all(9),
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchUserPage())),
+                  child: Icon(Icons.person_add, color: Theme.of(context).backgroundColor,),
+                ),
+              )
+            ],
+          ),
+          body: model.isBusy
+            ? Center(
+              child: SizedBox(
+                width: 48, height: 48,
+                child: CircularProgressIndicator(),
+              ),
+            )
+            : model.users.length == 0
+              ? Center(
+                child: Text('No user'),
+              )
+              : ListView.builder(
+                padding: EdgeInsets.all(10.0),
+                itemBuilder: (context, index) {
+                  print(model.users[index].toJson());
+                  print(model.messagesList[model.users[index]]);
+                  return ListTile(
+                    leading: CircleAvatar(
+                      radius: 8.0 * 5,
+                      backgroundImage: NetworkImage(model.users[index].avatar), // 'assets/profile.jpg'
+                    ),
+                    title: Text(model.users[index].name),
+                    onTap: () {
+                      Navigator.pop(context, model.users[index]);
+                      // Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatPage()));
+                    },
+                  );
+                },
+                itemCount: model.users.length,
+              ),
+        );
+      }
+    );
+  }
+}
+
 ChatMessage convertFCMDataToMessage(Map<String, String> data) {
   return ChatMessage(
     text: data["params.content"], 

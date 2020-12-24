@@ -1,6 +1,12 @@
 import 'dart:io';
 
+import 'package:dash_chat/dash_chat.dart';
 import 'package:flutter/material.dart';
+import 'package:imageChat/service/auth_service.dart';
+import 'package:imageChat/service/chat_service.dart';
+import 'package:imageChat/service/file_service.dart';
+import 'package:imageChat/util/random.dart';
+import 'package:imageChat/view/pages/chats_list_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stacked/stacked.dart';
 
@@ -10,6 +16,7 @@ import 'package:imagechat_native_opencv/delaunator_pattern.dart' as DelaunatorPa
 import 'package:imagechat_native_opencv/imagechat.dart' as nativeCV;
 
 import 'package:image_downloader/image_downloader.dart';
+import 'package:stacked_services/stacked_services.dart';
 import '../locator.dart';
 
 enum Format {
@@ -22,6 +29,8 @@ class SecretImageViewModel extends BaseViewModel {
   final TextEditingController secretText = TextEditingController();
   // Format format = Format.SiaPattern;
   Format format = Format.Cheelaunator;
+
+  final Future Function(String, String) sendToChat;
 
   ImageProvider _image;
 
@@ -37,6 +46,8 @@ class SecretImageViewModel extends BaseViewModel {
   imageFromFile(File file) {
     _image = FileImage(file);
   }
+
+  SecretImageViewModel({this.sendToChat});
 
   decode() async {
     String path;
@@ -78,6 +89,52 @@ class SecretImageViewModel extends BaseViewModel {
       log.e(e);
       setBusyForObject("encode", false);
     }
+  }
+
+  send() async {
+    String attach = format == Format.Cheelaunator? 'chee' : 'sia';
+    if(sendToChat != null) {
+      log.i('send');
+      // locator<SnackbarService>().showSnackbar(message: 'Send');
+      // return;
+      setBusyForObject("send", true);
+      try {
+        await sendToChat(outputImg.file.path, attach);
+      } catch(e) {
+        setBusyForObject("send", false);
+        log.e('send: $e');
+        locator<SnackbarService>().showSnackbar(message: 'Error sending message');
+      }
+    } else {
+      log.i('pick');
+      // locator<SnackbarService>().showSnackbar(message: 'Pick');
+      // return;
+      // TODO: choose from receiver
+      ChatUser receiver = await locator<NavigationService>().navigateToView(ChatListChoice());
+      if(receiver == null) {
+        locator<SnackbarService>().showSnackbar(message: 'Abort send image');
+      }
+      String id = getRandomString(18);
+      var bytes = await outputImg.file.readAsBytes();
+      try {
+        await locator<FileService>().uploadImage(id, bytes);
+        String url = 'https://file.angelmortal.xyz/file/testBuc/$id';
+        ChatMessage message = ChatMessage(
+          text: '', 
+          user: locator<AuthService>().user.toChatUser(), 
+          image: url, 
+          customProperties: {
+            'attachment': attach
+          }
+        );
+        await locator<ChatService>().sendMessage(message, receiver.uid);
+        locator<SnackbarService>().showSnackbar(message: 'message sent');
+      } catch(e) {
+        log.e('send: $e');
+        locator<SnackbarService>().showSnackbar(message: 'Error sending message');
+      }
+    }
+    setBusyForObject("send", false);
   }
 
   void clear() {
