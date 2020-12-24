@@ -13,25 +13,37 @@
 using namespace cv;
 using namespace std;
 
-const string EOFBinary = "000000000000001111111";
+const string EOFBinary = "0000100";
 
-map<std::string, cv::Scalar> colours = {
-	{"0000", cv::Scalar(0, 0, 128)},
-	{"0001", cv::Scalar(0, 0, 255)},
-	{"0010", cv::Scalar(0, 128, 0)},
-	{"0011", cv::Scalar(0, 128, 128)},
-	{"0100", cv::Scalar(0, 128, 255)},
-	{"0101", cv::Scalar(128, 0, 0)},
-	{"0110", cv::Scalar(128, 0, 128)},
-	{"0111", cv::Scalar(128, 0, 255)},
-	{"1000", cv::Scalar(128, 128, 0)},
-	{"1001", cv::Scalar(128, 128, 128)},
-	{"1010", cv::Scalar(128, 128, 255)},
-	{"1011", cv::Scalar(128, 255, 0)},
-	{"1100", cv::Scalar(255, 0, 0)},
-	{"1101", cv::Scalar(255, 0, 128)},
-	{"1110", cv::Scalar(255, 0, 255)},
-	{"1111", cv::Scalar(255, 128, 0)}
+
+void platform_log(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+#ifdef __ANDROID__
+    __android_log_vprint(ANDROID_LOG_VERBOSE, "ndk", fmt, args);
+#else
+    vprintf(fmt, args);
+#endif
+    va_end(args);
+}
+
+map<string, Scalar> colours = {
+	{"0000", Scalar(0, 0, 128)},
+	{"0001", Scalar(0, 0, 255)},
+	{"0010", Scalar(0, 128, 0)},
+	{"0011", Scalar(0, 128, 128)},
+	{"0100", Scalar(0, 128, 255)},
+	{"0101", Scalar(128, 0, 0)},
+	{"0110", Scalar(128, 0, 128)},
+	{"0111", Scalar(128, 0, 255)},
+	{"1000", Scalar(128, 128, 0)},
+	{"1001", Scalar(128, 128, 128)},
+	{"1010", Scalar(128, 128, 255)},
+	{"1011", Scalar(128, 255, 0)},
+	{"1100", Scalar(255, 0, 0)},
+	{"1101", Scalar(255, 0, 128)},
+	{"1110", Scalar(255, 0, 255)},
+	{"1111", Scalar(255, 128, 0)}
 };
 
 Scalar encode(string data) {
@@ -52,7 +64,7 @@ string strToBinary(string s)
 	int n = s.length();
 	string binData = "";
 
-	for (int i = 0; i <= n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		// convert each char to
 		// ASCII value
@@ -98,7 +110,9 @@ string binaryToStr(string s)
 	return str;
 }
 
-Mat encodeImage(string data) {
+Mat encodeImage(string encryptedData, string type) {
+	string data = strToBinary(encryptedData);
+	data = data + EOFBinary;
 	int dataLength = data.length();
 
 	/* initialize random seed: */
@@ -148,15 +162,15 @@ Mat encodeImage(string data) {
 				currentData = data.substr(index, (indexToEmbed >= 4 ? 4: indexToEmbed));//get the 4 bit data for encoding
 				indexToEmbed -= 4;
 				if (currentData.length() < 4) {
-					int randIndex = rand() % dataLength;
+					int randIndex = rand() % (dataLength - 4);
 					currentData += data.substr(randIndex, 4 - currentData.length());
 				}
 			}
 			else {
-				int randIndex = rand() % dataLength;
+				int randIndex = rand() % (dataLength-4);
 				currentData = data.substr(randIndex, 4); //get random 4 bit data for encoding
 			}
-			Scalar colour = Colour::encode(currentData);
+			Scalar colour = encode(currentData);
 			const Point* ppt[1] = { points[0] };
 			int npt[] = { 3 };
 			int lineType = LINE_8;
@@ -217,13 +231,16 @@ string decodeImage(string filePath) {
 	for (int i = 0; i < contours.size(); i++) {
 		Rect contour = boundingRect(contours[i]);
 		Vec3b colour = image.at<Vec3b>(Point(contour.x + (contour.width/2), contour.y + (contour.height/2)));
-		string currentData = Colour::decode(colour);
+		string currentData = decode(colour);
 		data += currentData;
 	}
-	int index = data.find(EOFBinary);
-	data = data.substr(0, index);
+	//int index = data.find(EOFBinary);
+	//data = data.substr(0, index);
 	string secretMessage = "";
 	for (int i = 0; i < data.length()/7; i++) {
+	    if(data.substr(i * 7, 7) == EOFBinary){
+	        break;
+	    }
 		string cur = binaryToStr(data.substr(i * 7, 7));
 		secretMessage += cur;
 	}
@@ -234,17 +251,6 @@ long long int get_now() {
     return chrono::duration_cast<std::chrono::milliseconds>(
             chrono::system_clock::now().time_since_epoch()
     ).count();
-}
-
-void platform_log(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-#ifdef __ANDROID__
-    __android_log_vprint(ANDROID_LOG_VERBOSE, "ndk", fmt, args);
-#else
-    vprintf(fmt, args);
-#endif
-    va_end(args);
 }
 
 // Avoiding name mangling

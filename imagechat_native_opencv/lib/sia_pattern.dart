@@ -24,24 +24,10 @@ final _DecodeImageFunc _decodeImage = _lib
     .lookup<ffi.NativeFunction<_decode_image_func>>('decodeImage')
     .asFunction();
 
-void generateImage(ProcessImageArguments args) {
-  _generateImage(Utf8.toUtf8(args.data), Utf8.toUtf8(args.outputPath), Utf8.toUtf8(args.type));
+void generateImage(String data, String outputPath, String type) {
+  _generateImage(Utf8.toUtf8(data), Utf8.toUtf8(outputPath), Utf8.toUtf8(type));
 }
 
-String decodeImage(DecodeImageArguments args){
-  return Utf8.fromUtf8(_decodeImage(Utf8.toUtf8(args.inputPath)));
-}
-
-class ProcessImageArguments {
-  final String data;
-  final String outputPath;
-  final String type;
-
-  ProcessImageArguments(this.data, this.outputPath, this.type);
-}
-
-class DecodeImageArguments {
-  final String inputPath;
-
-  DecodeImageArguments(this.inputPath);
+String decodeImage(String inputPath){
+  return Utf8.fromUtf8(_decodeImage(Utf8.toUtf8(inputPath)));
 }
