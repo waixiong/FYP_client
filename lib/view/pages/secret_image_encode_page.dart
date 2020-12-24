@@ -3,7 +3,7 @@ import 'package:imageChat/viewmodel/secret_image_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 class SecretImageEncodePage extends StatelessWidget {
-  final Function(String) sendToChat; // (String url)
+  final Function(String, String) sendToChat; // (String url)
   SecretImageEncodePage({this.sendToChat});
 
   @override
@@ -11,7 +11,7 @@ class SecretImageEncodePage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(9),
       child: ViewModelBuilder<SecretImageViewModel>.reactive(
-        viewModelBuilder: () => SecretImageViewModel(),
+        viewModelBuilder: () => SecretImageViewModel(sendToChat: sendToChat),
         builder: (context, model, _) {
           return SingleChildScrollView(
             child: Column(
@@ -81,7 +81,7 @@ class SecretImageEncodePage extends StatelessWidget {
                               child: Text('Save')
                             ),
                             RaisedButton(
-                              onPressed: () {},
+                              onPressed: model.send,
                               child: Text('Send'),
                             )
                           ],
@@ -98,7 +98,7 @@ class SecretImageEncodePage extends StatelessWidget {
 }
 
 class SecretImageEncodeFullPage extends StatelessWidget {
-  final Function(String) sendToChat; // (String url)
+  final Function(String, String) sendToChat; // (String url)
   SecretImageEncodeFullPage({this.sendToChat});
 
   @override
