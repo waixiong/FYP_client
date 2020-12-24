@@ -3,7 +3,10 @@ import 'dart:io';
 
 import 'package:imageChat/locator.dart';
 import 'package:imageChat/service/auth_service.dart';
+import 'package:imageChat/util/network_config.dart';
+import 'package:imageChat/view/pages/secret_image_decode_page.dart';
 import 'package:imageChat/view/pages/secret_image_encode_page.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import '../../viewmodel/chat_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:stacked/stacked.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import 'hero_photo_view.dart';
 
 // void main() => runApp(MyApp());
 
@@ -72,6 +79,14 @@ class _ChatPageState extends State<ChatPage> {
   //   print(message.toJson());
   //   // TODO: send
   // }
+
+  void navigateToEncode(ChatViewModel model) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => SecretImageEncodeFullPage(sendToChat: model.sendEncodedImage,)));
+  }
+
+  void navigateToDecode(ChatViewModel model) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => SecretImageDecodeFullPage()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,34 +177,129 @@ class _ChatPageState extends State<ChatPage> {
                 onLoadEarlier: model.loadEarlier,
                 shouldShowLoadEarlier: false,
                 showTraillingBeforeSend: true,
+                messageBuilder: _messageBuilder,
                 trailing: <Widget>[
                   IconButton(
-                    icon: Icon(Icons.photo),
-                    // onPressed: () async {
-                    //   File result = await ImagePicker.pickImage(
-                    //     source: ImageSource.gallery,
-                    //     imageQuality: 80,
-                    //     maxHeight: 400,
-                    //     maxWidth: 400,
-                    //   );
-
-                    //   if (result != null) {
-                    //     // TODO: set text
-                    //     // TODO: send image
-                    //     // TODO: set url
-
-                    //     ChatMessage message =
-                    //         ChatMessage(text: 'See the natural', user: model.self, image: 'https://file.angelmortal.xyz/file/testBuc/test_testwebpicture');
-                    //     model.postMessage(message);
-                    //     // TODO: upload
-                    //   }
-                    // },
-                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SecretImageEncodeFullPage())),
+                    icon: Icon(LineAwesomeIcons.image),
+                    onPressed: () => Scaffold.of(context).showSnackBar(SnackBar(content: Text('Currently not able to send image'),)),
+                  ),
+                  IconButton(
+                    icon: Icon(LineAwesomeIcons.key),
+                    onPressed: () => navigateToEncode(model),
                   )
                 ],
               );
             }
           }),
+    );
+  }
+
+  Widget _messageBuilder(ChatMessage message) {
+    final isUser = message.user.uid == widget.self.uid;
+    final constraints = BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height,
+        maxWidth: MediaQuery.of(context).size.width);
+    final messageContainerDecoration = BoxDecoration(
+      color: message.user.containerColor != null
+          ? message.user.containerColor
+          : isUser
+              ? Theme.of(context).accentColor
+              : Color.fromRGBO(225, 225, 225, 1),
+      borderRadius: BorderRadius.circular(5.0),
+    );
+    return Align(
+      alignment: isUser
+          ? AlignmentDirectional.centerEnd
+          : AlignmentDirectional.centerStart,
+      child: Container(
+        decoration: messageContainerDecoration,
+        margin: EdgeInsets.only(
+          bottom: 5.0,
+        ),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment:
+              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: <Widget>[
+            // image builder
+            message.image != null
+                ? GestureDetector(
+                    onLongPress: () {},
+                    onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HeroPhotoViewWrapper(
+                              imageProvider: CachedNetworkImageProvider(message.image),
+                              tag: message.image + message.hashCode.toString(),
+                              minScale: PhotoViewComputedScale.contained,
+                            ),
+                          ),
+                        ),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      child: Hero(
+                        transitionOnUserGestures: true,
+                        tag: message.image + message.hashCode.toString(),
+                        child: CachedNetworkImage(
+                          imageUrl: message.image,
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                          height: constraints.maxHeight * 0.3,
+                          width: constraints.maxWidth * 0.7,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ))
+                : SizedBox(),
+            // TODO: video builder
+            // message.video != null
+            //     ? Padding(
+            //         padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+            //         child: CustomVideoPlayer(
+            //           url: locator<API>().getChatImagePath(message.video),
+            //           height: constraints.maxHeight * 0.3,
+            //           width: constraints.maxWidth * 0.8,
+            //         ),
+            //       )
+            //     : SizedBox(),
+            // TODO: file holder
+            // if (message.customProperties != null)
+            //   if (message.customProperties.containsKey('file'))
+            //     NetworkFileHolder(
+            //         url: locator<API>()
+            //             .getChatImagePath(message.customProperties['file'])),
+            // Text builder
+            if (message.text != null)
+              ParsedText(
+                parse: const <MatchText>[],
+                text: message.text,
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+            // buttons builder
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment:
+                  isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: message.buttons ?? [],
+            ),
+            // Time builder
+            Padding(
+              padding: EdgeInsets.only(top: 5.0),
+              child: Text(
+                DateFormat('HH:mm').format(message.createdAt),
+                style: TextStyle(
+                  fontSize: 10.0,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

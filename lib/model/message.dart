@@ -1,8 +1,11 @@
 import 'package:dash_chat/dash_chat.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:imageChat/locator.dart';
 import 'package:imageChat/service/db.dart';
 import 'package:imageChat/service/grpc/chat.pbgrpc.dart' as pbChat;
+import 'package:imageChat/view/pages/secret_image_decode_page.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 part 'message.g.dart';
 
@@ -26,6 +29,7 @@ class Message extends HiveObject {
 
   @HiveField(5)
   final String attachment;
+  // replace decode flag
 
   @HiveField(6)
   final DateTime time;
@@ -55,7 +59,7 @@ class Message extends HiveObject {
       receiverId: m['receiverId'],
       text: m['text'],
       img: m['img'],
-      attachment: m['attachment'],
+      attachment: m['attachment']?? '',
       time: DateTime.fromMillisecondsSinceEpoch(int.parse(m['timestamp'])),
       read: m['read']
     );
@@ -69,6 +73,13 @@ class Message extends HiveObject {
       createdAt: time,
       id: id,
       // TODO: decode button
+      buttons: attachment.isNotEmpty? [
+        OutlineButton(
+          // color
+          onPressed: () => locator<NavigationService>().navigateToView(SecretImageDecodeFullPage()),
+          child: Text('Decode Image'),
+        )
+      ] : []
     );
   }
 }

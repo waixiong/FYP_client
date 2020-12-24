@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:imageChat/service/file_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 import './service/db.dart';
@@ -38,6 +39,7 @@ void setupLocator() {
 
   locator.registerLazySingleton(() => MessagingTokenService(service: 'https://imagechat.getitqec.com'));
   locator.registerLazySingleton(() => PushNotificationsManager());
+  locator.registerLazySingleton(() => FileService());
 }
 
 void setupChatService(String accessToken) {

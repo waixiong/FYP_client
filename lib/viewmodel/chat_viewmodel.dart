@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imageChat/service/chat_service.dart';
 import 'package:imageChat/service/db.dart';
+import 'package:imageChat/service/file_service.dart';
+import '../util/random.dart';
 import 'package:imageChat/view/pages/secret_image_decode_page.dart';
 
 import 'package:imagechat_native_opencv/delaunator_pattern.dart' as DelaunatorPattern;
-import 'package:imagechat_native_opencv/imagechat.dart' as nativeCV;
+import 'package:imagechat_native_opencv/opencv.dart' as nativeCV;
 
 import '../logger.dart';
 import 'package:stacked/stacked.dart';
@@ -57,6 +61,10 @@ class ChatViewModel extends BaseViewModel {
   //   }
   //   notifyListeners();
   // }
+
+  void navigateToDecode() {
+    locator<NavigationService>().navigateToView(SecretImageDecodeFullPage());
+  }
 
   init() async {
     setBusy(true);
@@ -155,7 +163,47 @@ class ChatViewModel extends BaseViewModel {
     }
   }
 
-  postMessage(ChatMessage message) async {
+  Future<void> sendImage(String filepath) async {
+    String id = getRandomString(18);
+    var bytes = await File(filepath).readAsBytes();
+    try {
+      await locator<FileService>().uploadImage(id, bytes);
+      String url = 'https://file.angelmortal.xyz/file/testBuc/$id';
+      ChatMessage message = ChatMessage(
+        text: '', 
+        user: self, 
+        image: url, 
+        customProperties: {}
+      );
+      return postMessage(message);
+    } catch(e) {
+      log.e('sendEncodedImage: $e');
+      throw(e);
+    }
+  }
+
+  Future<void> sendEncodedImage(String filepath, String attach) async {
+    String id = getRandomString(18);
+    var bytes = await File(filepath).readAsBytes();
+    try {
+      await locator<FileService>().uploadImage(id, bytes);
+      String url = 'https://file.angelmortal.xyz/file/testBuc/$id';
+      ChatMessage message = ChatMessage(
+        text: '', 
+        user: self, 
+        image: url, 
+        customProperties: {
+          'attachment': attach
+        }
+      );
+      return postMessage(message);
+    } catch(e) {
+      log.e('sendEncodedImage: $e');
+      throw(e);
+    }
+  }
+
+  Future<void> postMessage(ChatMessage message) async {
     try {
       // setBusy(true);
       setBusyForObject('send', true);
