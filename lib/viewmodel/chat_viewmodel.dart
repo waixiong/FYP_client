@@ -9,7 +9,7 @@ import '../util/random.dart';
 import 'package:imageChat/view/pages/secret_image_decode_page.dart';
 
 import 'package:imagechat_native_opencv/delaunator_pattern.dart' as DelaunatorPattern;
-import 'package:imagechat_native_opencv/imagechat.dart' as nativeCV;
+import 'package:imagechat_native_opencv/opencv.dart' as nativeCV;
 
 import '../logger.dart';
 import 'package:stacked/stacked.dart';
