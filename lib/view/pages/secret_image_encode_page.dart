@@ -8,6 +8,51 @@ class SecretImageEncodePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    FocusNode _textFocusNode = FocusNode();
+    FocusNode _secretNode = FocusNode();
+    bool _obscureText = true;
+
+    _textEditingComplete() {
+      FocusScope.of(context).requestFocus(_secretNode);
+    }
+
+    _editingComplete() {
+      FocusScope.of(context).unfocus(disposition: UnfocusDisposition.previouslyFocusedChild);
+      print('Unfocus');
+    }
+
+    _onClickSetting(SecretImageViewModel model) async {
+      showDialog(context: context, builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return SimpleDialog(
+              title: Text('Format Setting'),
+              children: [
+                DropdownButton<Format>(
+                  items: [
+                    DropdownMenuItem<Format>(
+                      child: Text('Sia Pattern'),
+                      value: Format.SiaPattern,
+                    ),
+                    DropdownMenuItem<Format>(
+                      child: Text('Cheelaunator'),
+                      value: Format.Cheelaunator,
+                    )
+                  ], 
+                  onChanged: (value) {
+                    model.changePatternFormat(value);
+                    setState((){});
+                  },
+                  value: model.format,
+                )
+              ],
+            );
+          }
+        );
+      });
+    }
+
     return Padding(
       padding: EdgeInsets.all(9),
       child: ViewModelBuilder<SecretImageViewModel>.reactive(
@@ -20,23 +65,98 @@ class SecretImageEncodePage extends StatelessWidget {
               children: [
                 Container(
                   padding: EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    border: Border.all()
-                  ),
+                  // decoration: BoxDecoration(
+                  //   border: Border.all()
+                  // ),
                   child: Column(
                     children: [
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Input Text',
-                        ),
+                      // TextField(
+                      //   decoration: InputDecoration(
+                      //     labelText: 'Input Text',
+                      //   ),
+                      //   controller: model.inputText,
+                      // ),
+                      Row(
+                        children: [
+                          Expanded(child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Encode With " + (model.format == Format.Cheelaunator? "Cheelaunator" : "SiaPattern"), style: Theme.of(context).textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),),
+                          )),
+                          IconButton(
+                            onPressed: () => _onClickSetting(model),
+                            icon: Icon(Icons.settings),
+                          )
+                        ],
+                      ),
+                      TextFormField(
+                        enabled: model.isBusy ? false : model.busy("encode")? false : model.busy("decode")? false : true,
                         controller: model.inputText,
-                      ),
-                      TextField(
+                        focusNode: _textFocusNode,
+                        textInputAction: TextInputAction.next,
+                        onEditingComplete: model.format == Format.Cheelaunator? () => _editingComplete() : () => _textEditingComplete(),
+                        keyboardType: TextInputType.emailAddress,
+                        cursorColor: Colors.black,
+                        autocorrect: true,
                         decoration: InputDecoration(
-                          labelText: 'Secret Key (optional)',
+                          fillColor: Colors.grey[200],
+                          filled: true,
+                          labelText: "InputText",
+                          labelStyle: TextStyle(
+                              color: Colors.black),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.black),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
-                        controller: model.secretText,
                       ),
+                      // TextField(
+                      //   decoration: InputDecoration(
+                      //     labelText: 'Secret Key (optional)',
+                      //   ),
+                      //   controller: model.secretText,
+                      // ),
+                      SizedBox(height: 3,),
+                      StatefulBuilder(
+                        builder: (context, setState) => TextFormField(
+                          enabled: model.isBusy ? false : model.busy("encode")? false : model.busy("decode")? false : model.format == Format.Cheelaunator? false : true,
+                          controller: model.secretText,
+                          focusNode: _secretNode,
+                          onEditingComplete: () => _editingComplete(),
+                          textInputAction: TextInputAction.done,
+                          keyboardType: TextInputType.visiblePassword,
+                          cursorColor: Colors.black,
+                          obscureText: _obscureText,
+                          autocorrect: false,
+                          decoration: InputDecoration(
+                            fillColor: Colors.grey[200],
+                            filled: true,
+                            labelText: "Secret (Optional)",
+                            labelStyle: TextStyle(color: Colors.black,),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                              icon: Icon(Icons.remove_red_eye),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.black),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -45,10 +165,21 @@ class SecretImageEncodePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     FlatButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        // side: BorderSide()
+                      ),
+                      clipBehavior: Clip.antiAlias,
                       onPressed: model.clear, 
                       child: Text('Clear')
                     ),
+                    SizedBox(width: 3,),
                     RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        // side: BorderSide()
+                      ),
+                      clipBehavior: Clip.antiAlias,
                       onPressed: model.encode,
                       child: Text('Encode Image'),
                     )
@@ -77,10 +208,20 @@ class SecretImageEncodePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             FlatButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                                side: BorderSide()
+                              ),
+                              clipBehavior: Clip.antiAlias,
                               onPressed: () {}, 
                               child: Text('Save')
                             ),
                             RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                                side: BorderSide()
+                              ),
+                              clipBehavior: Clip.antiAlias,
                               onPressed: model.send,
                               child: Text('Send'),
                             )

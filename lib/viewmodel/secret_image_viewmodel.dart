@@ -13,7 +13,8 @@ import 'package:stacked/stacked.dart';
 import 'package:imageChat/view/pages/secret_image_decode_page.dart';
 
 import 'package:imagechat_native_opencv/delaunator_pattern.dart' as DelaunatorPattern;
-import 'package:imagechat_native_opencv/sia_pattern.dart' as siaPattern;
+import 'package:imagechat_native_opencv/opencv.dart' as nativeCV;
+import 'package:imagechat_native_opencv/sia_pattern.dart' as SiaPattern;
 
 import 'package:image_downloader/image_downloader.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -28,10 +29,9 @@ enum Format {
 class SecretImageViewModel extends BaseViewModel {
   final TextEditingController inputText = TextEditingController();
   final TextEditingController secretText = TextEditingController();
-  final TextEditingController decodedText = TextEditingController();
+  // final TextEditingController decodedText = TextEditingController();
   final String salt = "CXcVvxIMk6y0cPbTsF9a5IB15Pw04psEoAEJQ9EcZBJWaqYA29ZubQZPSOn8+xN9yJq7xWIUPwrOHFHuK5gUn6uF66kPy120SXxESFMuMCBLMWtTGyy743Ge5C/PQ5LPRs4qAOe0Ea/nPShkF0mA0nXT7Rt76/6VOm6qENNuUwE=";
-  // Format format = Format.SiaPattern;
-  Format format = Format.Cheelaunator;
+  Format format = Format.SiaPattern;
 
   final Future Function(String, String) sendToChat;
 
@@ -63,12 +63,13 @@ class SecretImageViewModel extends BaseViewModel {
     }
     try {
       if(format == Format.Cheelaunator) {
+        // TODO: 
         DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp');
       }
       else{
-        siaPattern.decodeImage(tempDir.path + '/img.jpg');
+        SiaPattern.decodeImage(path);
       }
-      _outputImg = FileImage(File(tempDir.path + '/img.webp'));
+      // _outputImg = FileImage(File(tempDir.path + '/img.webp'));
       setBusyForObject("decode", false);
     } catch(e) {
       log.e("encoding err");
@@ -90,8 +91,8 @@ class SecretImageViewModel extends BaseViewModel {
         if(secretText.text.length != 0){
           encryptedData = await encrypt();
         }
-        siaPattern.generateImage(encryptedData, tempDir.path + '/img.jpg', "Image");
-        _outputImg = FileImage(File(tempDir.path + '/img.jpg'));
+        SiaPattern.generateImage(encryptedData, tempDir.path + '/img.webp', 'Image');
+        _outputImg = FileImage(File(tempDir.path + '/img.webp'));
       }
       setBusyForObject("encode", false);
       log.i('done encode');
@@ -116,11 +117,16 @@ class SecretImageViewModel extends BaseViewModel {
     try {
       String key = await cryptor.generateKeyFromPassword(secretKey, salt);
       String decryptedData = await cryptor.decrypt(encryptedData, key);
-      decodedText.text = decryptedData;
+      _outputString = decryptedData;
     } on MacMismatchException {
-      print("wrongly decrypted");
-      decodedText.text = "Can't decrypt the image";
+      log.e("wrongly decrypted");
+      _outputString = "Can't decrypt the image";
     }
+  }
+  
+  changePatternFormat(Format f) {
+    format = f;
+    notifyListeners();
   }
 
   send() async {

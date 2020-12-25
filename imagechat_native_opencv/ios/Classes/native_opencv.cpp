@@ -8,7 +8,7 @@
 #include <android/log.h>
 #endif
 
-#include "delaunator_pattern.cpp"
+// #include "delaunator_pattern.cpp"
 
 using namespace cv;
 using namespace std;
@@ -110,9 +110,13 @@ string binaryToStr(string s)
 	return str;
 }
 
+<<<<<<< HEAD
 Mat encodeImage(string encryptedData, string type) {
 	string data = strToBinary(encryptedData);
 	data = data + EOFBinary;
+=======
+Mat encodeImage(string data, string type) {
+>>>>>>> intergration to view and viewmodel
 	int dataLength = data.length();
 
 	/* initialize random seed: */
