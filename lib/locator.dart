@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 // import 'core/services/database.dart';
 
 GetIt locator = GetIt.instance;
-final log = getLogger('locator');
+final _log = getLogger('locator');
 
 Directory tempDir;
 Directory externalDir;
@@ -39,14 +39,14 @@ void setupLocator() {
 
   locator.registerLazySingleton(() => MessagingTokenService(service: 'https://imagechat.getitqec.com'));
   locator.registerLazySingleton(() => PushNotificationsManager());
-  locator.registerLazySingleton(() => FileService());
+  locator.registerLazySingleton(() => FileService(service: 'https://imagechat.getitqec.com'));
 }
 
 void setupChatService(String accessToken) {
   try {
     locator.unregister(instance: locator<ChatService>());
   } catch(e) {
-    log.i('No type ChatService is registered inside GetIt.');
+    _log.i('No type ChatService is registered inside GetIt.');
   }
   // ChatService s = ChatService(host: '192.168.1.114', port: 8100);
   ChatService s = ChatService(host: 'imagechat.getitqec.com', port: 2053);
@@ -58,7 +58,7 @@ void setupChatService(String accessToken) {
   try {
     locator.unregister(instance: locator<DB>());
   } catch(e) {
-    log.i('No type ChatService is registered inside GetIt.');
+    _log.i('No type ChatService is registered inside GetIt.');
   }
   locator.registerLazySingleton(() => DB());
 }

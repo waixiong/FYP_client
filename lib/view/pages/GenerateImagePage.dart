@@ -20,7 +20,7 @@ class GenerateImagePageState extends State<GenerateImagePage>{
   }
 
   void dummyOnChange(){
-
+    //
   }
 
   @override
@@ -38,7 +38,7 @@ class GenerateImagePageState extends State<GenerateImagePage>{
                     Expanded(
                       child: new TextField(
                         decoration: new InputDecoration(
-                          labelText: "Secret Message",
+                          // labelText: "Secret Message",
                           hintText: "Secret Message",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -58,7 +58,7 @@ class GenerateImagePageState extends State<GenerateImagePage>{
                     Expanded(
                       child: new TextField(
                         decoration: new InputDecoration(
-                          labelText: "Secret Key(Optional)",
+                          // labelText: "Secret Key(Optional)",
                           hintText: "Secret Key(Optional)",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),

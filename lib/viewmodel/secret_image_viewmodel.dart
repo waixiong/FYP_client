@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dash_chat/dash_chat.dart';
 import 'package:flutter/material.dart';
+import 'package:imageChat/logger.dart';
 import 'package:imageChat/service/auth_service.dart';
 import 'package:imageChat/service/chat_service.dart';
 import 'package:imageChat/service/file_service.dart';
@@ -27,15 +28,17 @@ enum Format {
 }
 
 class SecretImageViewModel extends BaseViewModel {
+  final log = getLogger('SecretImageViewModel');
   final TextEditingController inputText = TextEditingController();
   final TextEditingController secretText = TextEditingController();
   // final TextEditingController decodedText = TextEditingController();
-  final String salt = "CXcVvxIMk6y0cPbTsF9a5IB15Pw04psEoAEJQ9EcZBJWaqYA29ZubQZPSOn8+xN9yJq7xWIUPwrOHFHuK5gUn6uF66kPy120SXxESFMuMCBLMWtTGyy743Ge5C/PQ5LPRs4qAOe0Ea/nPShkF0mA0nXT7Rt76/6VOm6qENNuUwE=";
+  final String salt = "=";
   Format format = Format.SiaPattern;
 
   final Future Function(String, String) sendToChat;
 
   ImageProvider _image;
+  ImageProvider get inputImage => _image;
 
   FileImage _outputImg;
   String _outputString;
@@ -43,11 +46,12 @@ class SecretImageViewModel extends BaseViewModel {
   String get outputString => _outputString;
 
   imageFromNetwork(String url) {
+    if(url != null)
     _image = NetworkImage(url);
   }
 
-  imageFromFile(File file) {
-    _image = FileImage(file);
+  imageFromFile(String path) {
+    _image = FileImage(File(path));
   }
 
   SecretImageViewModel({this.sendToChat});
@@ -129,7 +133,7 @@ class SecretImageViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  send() async {
+  Future<void> send() async {
     String attach = format == Format.Cheelaunator? 'chee' : 'sia';
     if(sendToChat != null) {
       log.i('send');
@@ -139,7 +143,7 @@ class SecretImageViewModel extends BaseViewModel {
       try {
         await sendToChat(outputImg.file.path, attach);
       } catch(e) {
-        setBusyForObject("send", false);
+        // setBusyForObject("send", false);
         log.e('send: $e');
         locator<SnackbarService>().showSnackbar(message: 'Error sending message');
       }
@@ -169,14 +173,25 @@ class SecretImageViewModel extends BaseViewModel {
         locator<SnackbarService>().showSnackbar(message: 'message sent');
       } catch(e) {
         log.e('send: $e');
+        setBusyForObject("send", false);
         locator<SnackbarService>().showSnackbar(message: 'Error sending message');
       }
     }
     setBusyForObject("send", false);
   }
 
+  Future<void> save() async {
+    setBusyForObject("save", true);
+    String path = externalDir.path + '/' + getRandomString(15);
+    await _outputImg.file.copy(path);
+    setBusyForObject("save", false);
+    locator<SnackbarService>().showSnackbar(message: 'Save at $path', duration: Duration(seconds: 6));
+  }
+
   void clear() {
     inputText.clear();
     secretText.clear();
+    _outputImg = null;
+    notifyListeners();
   }
 }

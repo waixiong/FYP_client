@@ -47,7 +47,7 @@ dependencies:
   salomon_bottom_bar: ^2.0.0
   
   dash_chat: ^1.1.14
-  image_picker: ^0.6.7+4
+  image_picker: ^0.6.7+17
   grpc: ^2.8.0
   # file_picker: ^2.0.0
   # open_file: ^3.0.3

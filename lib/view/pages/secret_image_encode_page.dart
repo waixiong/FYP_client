@@ -61,7 +61,7 @@ class SecretImageEncodePage extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   padding: EdgeInsets.all(3),
@@ -186,7 +186,10 @@ class SecretImageEncodePage extends StatelessWidget {
                   ],
                 ),
                 if(model.busy("encode")) 
-                  Container()
+                  SizedBox(
+                    height: 36, width: 36,
+                    child: CircularProgressIndicator(),
+                  )
                 else
                   if(model.outputImg != null)
                     Column(
@@ -207,28 +210,33 @@ class SecretImageEncodePage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            FlatButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18.0),
-                                side: BorderSide()
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              onPressed: () {}, 
-                              child: Text('Save')
-                            ),
-                            RaisedButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18.0),
-                                side: BorderSide()
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              onPressed: model.send,
-                              child: Text('Send'),
-                            )
+                            model.busy('save')
+                                ? CircularProgressIndicator()
+                                : FlatButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    side: BorderSide()
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  onPressed: model.save,
+                                  child: Text('Save')
+                                ),
+                            model.busy('send')
+                                ? CircularProgressIndicator()
+                                : RaisedButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    side: BorderSide()
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  onPressed: model.send,
+                                  child: Text('Send'),
+                                )
                           ],
                         )
                       ],
                     ),
+                SizedBox(height: 120,)
               ],
             ),
           );
