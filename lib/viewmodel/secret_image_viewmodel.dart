@@ -32,7 +32,7 @@ class SecretImageViewModel extends BaseViewModel {
   final TextEditingController inputText = TextEditingController();
   final TextEditingController secretText = TextEditingController();
   // final TextEditingController decodedText = TextEditingController();
-  final String salt = "=";
+  final String salt = "a=";
   Format format = Format.SiaPattern;
 
   final Future Function(String, String) sendToChat;
