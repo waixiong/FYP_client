@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:imageChat/viewmodel/secret_image_viewmodel.dart';
+import 'package:imageChat/viewmodel/optical_label_viewmodel.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
 
@@ -10,8 +10,8 @@ class OpticalLabelScanPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(9),
-      child: ViewModelBuilder<SecretImageViewModel>.reactive(
-        viewModelBuilder: () => SecretImageViewModel(),
+      child: ViewModelBuilder<OpticalLabelViewModel>.reactive(
+        viewModelBuilder: () => OpticalLabelViewModel(),
         builder: (context, model, _) {
           return SingleChildScrollView(
             child: Column(
@@ -21,7 +21,7 @@ class OpticalLabelScanPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: RaisedButton(
-                    onPressed: () {},
+                    onPressed: () {model.onImageButtonPressed(context);},
                     child: Row(
                       children: [
                         Icon(Icons.camera_alt_outlined),
