@@ -2,7 +2,8 @@
 
 #include <vector>
 
-#include <opencv2/opencv.hpp>
+// #include <opencv2/opencv.hpp>
+#include "../../include/opencv2/opencv.hpp"
 // #include <opencv2/core.hpp>
 // #include <opencv2/imgproc.hpp>
 // #include <opencv2/highgui.hpp>
@@ -20,9 +21,6 @@
 #include "InfInt.h"
 #include "delaunator.hpp"
 // #include <native_opencv.cpp>
-
-#include <iostream>
-#include <fstream>
 
 #include "delaunator_pattern/utils.cpp"
 #include "delaunator_pattern/encoder.cpp"
@@ -74,41 +72,29 @@ void _encode(char* inputData, char* outputFile) {
     imwrite(outputFile, img);
 }
 
-char* _decode(char* inputFile) {
-    srand(time(0));
-
-    Mat inputImg = imread(inputFile);
-    vector<double> points = decodePoints(inputImg);
-
-    delaunator::Delaunator delaunator(points);
-
-    InfInt data = decodeFromTriangleColor(delaunator, points, inputImg);
-    char* output = BigIntToBytes(data);
-    output = checkEOF(output);
-
-    __android_log_print(ANDROID_LOG_DEBUG, "flutter", "output: %s", output);
-
-    return output;
-}
-
 // Avoiding name mangling
 extern "C" {
     // Attributes to prevent 'unused' function from being removed and to make it visible
     __attribute__((visibility("default"))) __attribute__((used))
-    void decodeDelaunatorPattern(char* inputFile, char* outputFile) {
+    char* decodeDelaunatorPattern(char* inputFile) {
         // long long start = get_now();
-        char* output = _decode(inputFile);
+        srand(time(0));
+
+        Mat inputImg = imread(inputFile);
+        vector<double> points = decodePoints(inputImg);
+
+        delaunator::Delaunator delaunator(points);
+
+        InfInt data = decodeFromTriangleColor(delaunator, points, inputImg);
+        char* output = BigIntToBytes(data);
+        output = checkEOF(output);
         
-        // char* ret = new char;
-        // strcpy(ret, output);
-        ofstream OutFile(outputFile);
-        OutFile << output;
-        OutFile.close();
+        char* ret = new char;
+        strcpy(ret, output);
         
-        // cout << "cpp [decodeDelaunatorPattern] Done\n";
+        cout << "cpp [decodeDelaunatorPattern] Done\n";
         
-        // return (char*) "OK";
-        // return ret;
+        return ret;
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
@@ -128,22 +114,39 @@ extern "C" {
         _encode(inputData, outputFile);
 
         int tries = 0;
-        char* ret = _decode(outputFile);
-        while(strcmp(ret, inputData) != 0 && tries < 5) {
+        char* ret = decodeDelaunatorPattern(outputFile);
+        cout << "check\n";
+        while(ret != inputData && tries < 5) {
+            cout << ret << "\n";
             _encode(inputData, outputFile);
-            ret = _decode(outputFile);
+            ret = decodeDelaunatorPattern(outputFile);
             tries ++;
-            delete ret;
         }
-        // cout << "cpp [encodeDelaunatorPattern] Done\n";
+        cout << "cpp [encodeDelaunatorPattern] Done\n";
         
-        if(strcmp(ret, inputData) != 0) {
-            // return (char*) "Please try again ";
-            string o = "Error on encoding";
-            o = o.append(ret);
-            delete ret;
+        if(ret != inputData) {
+            string o = "Please try again ";
+            o = o.append(inputData);
             return (char*) o.c_str();
         }
         return (char*) "OK";
     }
+}
+
+// g++ -o test delaunator_pattern.test2.cpp
+
+int main() {
+    string i = "Hello";
+    int n = i.length();
+    char input[n + 1];
+    strcpy(input, i.c_str());
+    cout << input << "\n";
+
+    string o = "./test/webp";
+    int n2 = o.length();
+    char t[n2 + 1];
+    strcpy(t, o.c_str());
+    char* out = encodeDelaunatorPattern(input, t);
+    cout << out << "\n";
+    return 0;
 }

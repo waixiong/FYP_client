@@ -21,6 +21,11 @@ class OpticalLabelScanPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                      // side: BorderSide()
+                    ),
+                    clipBehavior: Clip.antiAlias,
                     onPressed: () {model.onImageButtonPressed(context);},
                     child: Row(
                       children: [
@@ -34,6 +39,11 @@ class OpticalLabelScanPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                      // side: BorderSide()
+                    ),
+                    clipBehavior: Clip.antiAlias,
                     onPressed: () {},
                     child: Row(
                       children: [

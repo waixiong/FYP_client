@@ -32,7 +32,8 @@ class SecretImageViewModel extends BaseViewModel {
   final TextEditingController inputText = TextEditingController();
   final TextEditingController secretText = TextEditingController();
   // final TextEditingController decodedText = TextEditingController();
-  final String salt = "a=";
+  // final String salt = "a=";
+  final String salt = "CXcVvxIMk6y0cPbTsF9a5IB15Pw04psEoAEJQ9EcZBJWaqYA29ZubQZPSOn8+xN9yJq7xWIUPwrOHFHuK5gUn6uF66kPy120SXxESFMuMCBLMWtTGyy743Ge5C/PQ5LPRs4qAOe0Ea/nPShkF0mA0nXT7Rt76/6VOm6qENNuUwE=";
   Format format = Format.SiaPattern;
 
   final Future Function(String, String) sendToChat;
@@ -51,7 +52,9 @@ class SecretImageViewModel extends BaseViewModel {
   }
 
   imageFromFile(String path) {
+    log.i('OPEN: '+path);
     _image = FileImage(File(path));
+    notifyListeners();
   }
 
   SecretImageViewModel({this.sendToChat});
@@ -67,16 +70,20 @@ class SecretImageViewModel extends BaseViewModel {
     }
     try {
       if(format == Format.Cheelaunator) {
-        // TODO: 
-        DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp');
+        DelaunatorPattern.decodeDelaunatorPattern(path, externalDir.path+'/output');
+        // File(externalDir.path+'/output');
+        _outputString = await File(externalDir.path+'/output').readAsString();
       }
       else{
-        SiaPattern.decodeImage(path);
+        log.i('Using SiaPattern');
+        String out = SiaPattern.decodeImage(path);
+        _outputString = _decrypt(out);
       }
       // _outputImg = FileImage(File(tempDir.path + '/img.webp'));
       setBusyForObject("decode", false);
     } catch(e) {
       log.e("encoding err");
+      log.e(e);
       setBusyForObject("decode", false);
     }
   }
@@ -88,12 +95,13 @@ class SecretImageViewModel extends BaseViewModel {
     // print(appDocDir.path);
     try {
       if(format == Format.Cheelaunator) {
-        DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp');
+        var n = DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp');
+        log.i('from cpp: $n');
         _outputImg = FileImage(File(tempDir.path + '/img.webp'));
       } else {
         String encryptedData = inputText.text;
         if(secretText.text.length != 0){
-          encryptedData = await encrypt();
+          encryptedData = await _encrypt();
         }
         SiaPattern.generateImage(encryptedData, tempDir.path + '/img.webp', 'Image');
         _outputImg = FileImage(File(tempDir.path + '/img.webp'));
@@ -104,10 +112,11 @@ class SecretImageViewModel extends BaseViewModel {
       log.e("encoding err");
       log.e(e);
       setBusyForObject("encode", false);
+      log.e("err drop");
     }
   }
 
-  Future<String> encrypt() async{
+  Future<String> _encrypt() async{
     final cryptor = new PlatformStringCryptor();
     String secretKey = secretText.text;
     String key = await cryptor.generateKeyFromPassword(secretKey, salt);
@@ -115,7 +124,7 @@ class SecretImageViewModel extends BaseViewModel {
     return encryptedData;
   }
 
-  decrypt(String encryptedData) async{
+  _decrypt(String encryptedData) async{
     final cryptor = new PlatformStringCryptor();
     String secretKey = secretText.text;
     try {
@@ -182,8 +191,9 @@ class SecretImageViewModel extends BaseViewModel {
 
   Future<void> save() async {
     setBusyForObject("save", true);
-    String path = externalDir.path + '/' + getRandomString(15);
-    await _outputImg.file.copy(path);
+    String path = externalDir.path + '/' + getRandomString(15) + '.webp';
+    File file = await _outputImg.file.copy(path);
+    log.i(file.path);
     setBusyForObject("save", false);
     locator<SnackbarService>().showSnackbar(message: 'Save at $path', duration: Duration(seconds: 6));
   }

@@ -215,18 +215,19 @@ class SecretImageEncodePage extends StatelessWidget {
                                 : FlatButton(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
-                                    side: BorderSide()
+                                    // side: BorderSide()
                                   ),
                                   clipBehavior: Clip.antiAlias,
                                   onPressed: model.save,
                                   child: Text('Save')
                                 ),
+                            SizedBox(width: 3),
                             model.busy('send')
                                 ? CircularProgressIndicator()
                                 : RaisedButton(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
-                                    side: BorderSide()
+                                    // side: BorderSide()
                                   ),
                                   clipBehavior: Clip.antiAlias,
                                   onPressed: model.send,

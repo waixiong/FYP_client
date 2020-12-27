@@ -24,6 +24,23 @@
 
 using namespace std;
 
+// g++ -o test delaunator_pattern.test.cpp
+
+char* BigIntToBytes(InfInt num) {
+    string data = "";
+    // BigInteger num2 = BigInteger(array, 0, 1);
+    // cout << "\t\t" << strlen(array) << "\n";
+    while(num > 0) {
+        InfInt mod = num % 256;
+        data += mod.toInt();
+        num /= 256;
+    }
+
+    char* array = new char;
+    strcpy(array, data.c_str());
+    return array;
+}
+
 InfInt BigIntFromBytes(char* array) {
     InfInt num = InfInt();
     // BigInteger num2 = BigInteger(array, 0, 1);
@@ -171,16 +188,64 @@ extern "C" {
     }
 }
 
+char* checkEOF(char* array) {
+    size_t len = strlen(array);
+    size_t counter = 0;
+    size_t index = 0;
+
+    for(size_t i = 0; i < strlen(array); i++) {
+        if(array[i] == 0x1a) {
+            counter += 1;
+            if(counter >= 3) break;
+        } else {
+            index = i + 1;
+        }
+    }
+
+    char* ret = new char[index + 1];
+    // char ret[index + 1];
+    memcpy( ret, array, index );
+    ret[index] = '\0';
+    return ret;
+}
+
 int main() {
-    string i = "Hello world";
+    string i = "Hello";
     int n = i.length();
     char input[n + 1];
     strcpy(input, i.c_str());
+    cout << input << "\n";
 
-    string o = "";
-    int n2 = o.length();
-    char t[n2 + 1];
-    strcpy(t, o.c_str());
-    encodeDelaunatorPattern(input, t);
+    // string o = "";
+    // int n2 = o.length();
+    // char t[n2 + 1];
+    // strcpy(t, o.c_str());
+    // encodeDelaunatorPattern(input, t);
+    InfInt d = BigIntFromBytes(input);
+    cout << d << "\n";
+    // char* output;
+    char* output = BigIntToBytes(d);
+    cout << output << "\n";
+
+    // cout << "Test EOF\n";
+    // output = appendEndOfFile(output);
+    // cout << output << "\n";
+    // output = checkEOF(output);
+    // cout << output << "\n";
+
+    vector<vector<int>> l = {
+        {1, 3}, 
+        {2, 5},
+        {2, 3},
+        {3, 3},
+        {4, 3},
+        {3, 1}
+    };
+    sort(l.begin(), l.end(), [](const vector<int> &a, const vector<int> &b) {
+        return a[0] < b[0] || (a[0] == b[0] && a[1] < b[1]);
+    });
+    for(vector<int> num : l) {
+        cout << num[0] << ", " << num[1] << "\n";
+    }
     return 0;
 }

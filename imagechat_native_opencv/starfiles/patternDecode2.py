@@ -75,8 +75,9 @@ def extractFromTriangleColor(delaunator, points, numberData, multipleCounter, ma
 
         triangle_cnt = np.array( [(points[pointA][0], points[pointA][1]), (points[pointB][0], points[pointB][1]), (points[pointC][0], points[pointC][1])] )
 
-        imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        mask = np.zeros(imgray.shape[:2], np.uint8)
+        # imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # mask = np.zeros(imgray.shape[:2], np.uint8)
+        mask = np.zeros(img.shape[:2], np.uint8)
         mask = cv2.drawContours(mask, [triangle_cnt], 0, 255, -1)
         mean_val = cv2.mean(img, mask=mask)
         # method 2: 32 (8) [all]

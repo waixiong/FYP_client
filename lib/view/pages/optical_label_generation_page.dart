@@ -37,10 +37,21 @@ class OpticalLabelGenerationPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     FlatButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        // side: BorderSide()
+                      ),
+                      clipBehavior: Clip.antiAlias,
                       onPressed: () {}, 
                       child: Text('Clear')
                     ),
+                    SizedBox(width: 3,),
                     RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        // side: BorderSide()
+                      ),
+                      clipBehavior: Clip.antiAlias,
                       onPressed: () {},
                       child: Text('Generate'),
                     )
