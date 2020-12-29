@@ -143,10 +143,6 @@ class ProfileLayout extends StatelessWidget {
                   text: 'Privacy',
                 ),
                 ProfileListItem(
-                  icon: LineAwesomeIcons.history,
-                  text: 'Purchase History',
-                ),
-                ProfileListItem(
                   icon: LineAwesomeIcons.question_circle,
                   text: 'Help & Support',
                 ),

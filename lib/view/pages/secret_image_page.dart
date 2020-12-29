@@ -27,9 +27,7 @@ class _SecretImagePageState extends State<SecretImagePage> with SingleTickerProv
     return Scaffold(
       // extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("Secret Image", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
-        iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+        title: Text("Secret Image",),
         bottom: TabBar(
           controller: _pageController,
           tabs: [

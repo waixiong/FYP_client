@@ -133,7 +133,7 @@ extern "C" {
             _encode(inputData, outputFile);
             ret = _decode(outputFile);
             tries ++;
-            delete ret;
+            delete (ret);
         }
         // cout << "cpp [encodeDelaunatorPattern] Done\n";
         
@@ -141,7 +141,7 @@ extern "C" {
             // return (char*) "Please try again ";
             string o = "Error on encoding";
             o = o.append(ret);
-            delete ret;
+            delete (ret);
             return (char*) o.c_str();
         }
         return (char*) "OK";

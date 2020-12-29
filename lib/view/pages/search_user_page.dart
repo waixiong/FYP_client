@@ -12,9 +12,9 @@ class SearchUserPage extends StatelessWidget {
       builder: (context, model, _) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            // backgroundColor: Colors.white,
             title: Text('Search User'),
-            iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+            // iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
           ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,

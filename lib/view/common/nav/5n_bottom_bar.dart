@@ -19,7 +19,7 @@ class FiveNBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      initialData: 1,
+      initialData: 0,
       stream: pageIndexStream,
       builder: (context, snapshot) => Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -32,9 +32,9 @@ class FiveNBottomBar extends StatelessWidget {
             color: Theme.of(context).canvasColor,
             child: SalomonBottomBar(
               items: [
-                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.facebook_messenger), title: Text('Message')),
-                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.image), title: Text('Image')),
+                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.key), title: Text('Secret'),),
                 SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.qrcode), title: Text('QR Code')),
+                SalomonBottomBarItem(icon: Icon(LineAwesomeIcons.facebook_messenger), title: Text('Message')),
                 SalomonBottomBarItem(icon: ProfileDarkMode(), title: Text('${locator<AuthService>().user}')),
               ],
 

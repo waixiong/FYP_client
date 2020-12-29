@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imageChat/viewmodel/secret_image_viewmodel.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
 
 class SecretImageEncodePage extends StatelessWidget {
@@ -84,7 +85,7 @@ class SecretImageEncodePage extends StatelessWidget {
                           )),
                           IconButton(
                             onPressed: () => _onClickSetting(model),
-                            icon: Icon(Icons.settings),
+                            icon: Icon(LineAwesomeIcons.cog),
                           )
                         ],
                       ),
@@ -164,21 +165,21 @@ class SecretImageEncodePage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    FlatButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        // side: BorderSide()
-                      ),
+                    TextButton(
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(18.0),
+                      //   // side: BorderSide()
+                      // ),
                       clipBehavior: Clip.antiAlias,
                       onPressed: model.clear, 
                       child: Text('Clear')
                     ),
                     SizedBox(width: 3,),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        // side: BorderSide()
-                      ),
+                    ElevatedButton(
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(18.0),
+                      //   // side: BorderSide()
+                      // ),
                       clipBehavior: Clip.antiAlias,
                       onPressed: model.encode,
                       child: Text('Encode Image'),
@@ -212,11 +213,11 @@ class SecretImageEncodePage extends StatelessWidget {
                           children: [
                             model.busy('save')
                                 ? CircularProgressIndicator()
-                                : FlatButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                    // side: BorderSide()
-                                  ),
+                                : TextButton(
+                                  // shape: RoundedRectangleBorder(
+                                  //   borderRadius: BorderRadius.circular(18.0),
+                                  //   // side: BorderSide()
+                                  // ),
                                   clipBehavior: Clip.antiAlias,
                                   onPressed: model.save,
                                   child: Text('Save')
@@ -224,11 +225,11 @@ class SecretImageEncodePage extends StatelessWidget {
                             SizedBox(width: 3),
                             model.busy('send')
                                 ? CircularProgressIndicator()
-                                : RaisedButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                    // side: BorderSide()
-                                  ),
+                                : ElevatedButton(
+                                  // shape: RoundedRectangleBorder(
+                                  //   borderRadius: BorderRadius.circular(18.0),
+                                  //   // side: BorderSide()
+                                  // ),
                                   clipBehavior: Clip.antiAlias,
                                   onPressed: model.send,
                                   child: Text('Send'),
@@ -256,9 +257,9 @@ class SecretImageEncodeFullPage extends StatelessWidget {
     return Scaffold(
       // extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("Encode Secret Image", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
-        iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+        // backgroundColor: Colors.white,
+        title: Text("Encode Secret Image", ),
+        // iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
       ),
       body: SecretImageEncodePage(sendToChat: sendToChat,)
     );

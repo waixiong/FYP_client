@@ -36,6 +36,7 @@ char* checkEOF(char* array) {
     char* ret = new char[index + 1];
     memcpy( ret, array, index );
     ret[index] = '\0';
+    delete (array);
     return ret;
 }
 
@@ -49,6 +50,7 @@ char* BigIntToBytes(InfInt num) {
         num /= 256;
     }
 
+    // return data.c_str();
     char* array = new char;
     strcpy(array, data.c_str());
     return array;

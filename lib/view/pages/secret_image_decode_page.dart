@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imageChat/viewmodel/secret_image_viewmodel.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -69,7 +70,7 @@ class SecretImageDecodePage extends StatelessWidget {
                     )),
                     IconButton(
                       onPressed: () => _onClickSetting(model),
-                      icon: Icon(Icons.settings),
+                      icon: Icon(LineAwesomeIcons.cog),
                     )
                   ],
                 ),
@@ -129,12 +130,12 @@ class SecretImageDecodePage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    RaisedButton(
+                    ElevatedButton(
                       onPressed: model.decode,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        // side: BorderSide()
-                      ),
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(18.0),
+                      //   // side: BorderSide()
+                      // ),
                       clipBehavior: Clip.antiAlias,
                       child: Text('Decode Image'),
                     )
@@ -186,9 +187,9 @@ class SecretImageDecodeFullPage extends StatelessWidget {
     return Scaffold(
       // extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("Decode Secret Image", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
-        iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+        // backgroundColor: Colors.white,
+        title: Text("Decode Secret Image",),
+        // iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
       ),
       body: SecretImageDecodePage(urlFromChat: urlFromChat,)
     );

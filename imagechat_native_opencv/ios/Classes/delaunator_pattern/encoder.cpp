@@ -90,7 +90,7 @@ Mat imgGenerator(delaunator::Delaunator d, char* inputData, long maxSize) {
             // drawContours(img, {contours}, 0, Scalar(b*64+32, g*64+32, r*64+32));
             fillPoly(img, {contours}, Scalar(b*64+32, g*64+32, r*64+32));
         } else {
-            cout << "\tdone byte\n";
+            // cout << "\tdone byte\n";
             int r = rand() % 4;
             int g = rand() % 4;
             int b = rand() % 4;

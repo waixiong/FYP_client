@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:imageChat/locator.dart';
+import 'package:imageChat/view/common/theme.dart';
 import 'package:imageChat/view/pages/home.dart';
 import 'package:imageChat/view/pages/loginPage.dart';
 import 'package:imageChat/view/utils/LoadingPage.dart';
-import 'package:flutter/material.dart';
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -37,9 +37,9 @@ class MyMain extends StatelessWidget {
         builder: (context, box, _) => MaterialApp(
           title: '5N',
           debugShowCheckedModeBanner: false,
-          // theme: lightTheme,
-          // darkTheme: darkTheme,
-          themeMode: box.get('isDark', defaultValue: false) ? ThemeMode.dark : ThemeMode.light,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          // themeMode: box.get('isDark', defaultValue: false) ? ThemeMode.dark : ThemeMode.light,
 
           navigatorKey: locator<NavigationService>().navigatorKey,
           home: Root(),

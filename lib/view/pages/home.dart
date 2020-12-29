@@ -25,7 +25,7 @@ class MyHome extends StatelessWidget {
       // ),
 
       body: StreamBuilder(
-        initialData: 1,
+        initialData: 0,
         stream: bottomNav.pageIndexStream,
         builder: (context, snapshot) {
           if (snapshot.hasError || snapshot.data == null) return Container();
@@ -33,11 +33,11 @@ class MyHome extends StatelessWidget {
           return IndexedStack(
             index: snapshot.data,
             children: [
-              ChatList(),
               // SecretImageTopBar(),
               SecretImagePage(),
               // QRCodeTopBar(),
               OpticalLabelPage(),
+              ChatList(),
               ProfileLayout(),
             ],
           );

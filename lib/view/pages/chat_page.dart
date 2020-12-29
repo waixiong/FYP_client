@@ -92,9 +92,9 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(widget.target.name, style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
-        iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+        // backgroundColor: Colors.white,
+        title: Text(widget.target.name,),
+        // iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
       ),
       body: ViewModelBuilder<ChatViewModel>.reactive(
         viewModelBuilder: () => ChatViewModel(self: widget.self, targetUser: widget.target),
@@ -139,11 +139,11 @@ class _ChatPageState extends State<ChatPage> {
                 },
                 inputMaxLines: 5,
                 messageContainerPadding: EdgeInsets.only(left: 5.0, right: 5.0),
-                alwaysShowSend: true,
+                // alwaysShowSend: true,
                 inputTextStyle: TextStyle(fontSize: 16.0),
                 inputContainerStyle: BoxDecoration(
                   border: Border.all(width: 0.0),
-                  color: Colors.white,
+                  // color: Colors.white,
                 ),
                 // onQuickReply: (Reply reply) {
                 //   setState(() {

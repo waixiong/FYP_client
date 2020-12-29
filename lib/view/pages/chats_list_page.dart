@@ -11,6 +11,7 @@ import 'package:imageChat/viewmodel/chatlist_viewmodel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:dash_chat/dash_chat.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -32,15 +33,15 @@ class ChatList extends StatelessWidget {
         return Scaffold(
           // extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: Colors.white,
-            title: Text("Messaging", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
-            iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+            // backgroundColor: Colors.white,
+            title: Text("Messaging",),
+            // iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
             actions: [
               Padding(
                 padding: EdgeInsets.all(9),
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchUserPage())),
-                  child: Icon(Icons.person_add, color: Theme.of(context).backgroundColor,),
+                  child: Icon(LineAwesomeIcons.user_plus),
                 ),
               )
             ],

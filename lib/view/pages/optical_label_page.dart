@@ -26,9 +26,7 @@ class _OpticalLabelPageState extends State<OpticalLabelPage> with SingleTickerPr
     return Scaffold(
       // extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("Optical Label", style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),),
-        iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).backgroundColor),
+        title: Text("Optical Label",),
         bottom: TabBar(
           controller: _pageController,
           tabs: [
