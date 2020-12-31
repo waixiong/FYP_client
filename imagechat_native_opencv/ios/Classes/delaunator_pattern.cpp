@@ -62,33 +62,37 @@ using namespace std;
 
 void _encode(char* inputData, char* outputFile) {
     srand(time(0));
-
+    platform_log("\tgenerate2");
     inputData = appendEndOfFile(inputData);
     long size = calculateImgSize(inputData);
+    platform_log("\tgenerate3 %d", size);
     vector<double> points = generatePoints(size);
-
+    platform_log("\tgenerate4 points");
     delaunator::Delaunator delaunator(points);
-
+    platform_log("\tgenerate4 Delaunator");
     Mat img = imgGenerator(delaunator, inputData, size);
-    
+    platform_log("\tgenerate5");
     imwrite(outputFile, img);
 }
 
 char* _decode(char* inputFile) {
     srand(time(0));
-
+    platform_log("\tdecode2");
     Mat inputImg = imread(inputFile);
-    vector<double> points = decodePoints(inputImg);
+    platform_log("\tdecode2.5");
+    try {
+        vector<double> points = decodePoints(inputImg);
+        platform_log("\tdecode3");
+        delaunator::Delaunator delaunator(points);
 
-    delaunator::Delaunator delaunator(points);
-
-    InfInt data = decodeFromTriangleColor(delaunator, points, inputImg);
-    char* output = BigIntToBytes(data);
-    output = checkEOF(output);
-
-    __android_log_print(ANDROID_LOG_DEBUG, "flutter", "output: %s", output);
-
-    return output;
+        InfInt data = decodeFromTriangleColor(delaunator, points, inputImg);
+        char* output = BigIntToBytes(data);
+        output = checkEOF(output);
+        platform_log("\tdecode4");
+        return output;
+    } catch (char* e) {
+        return e;
+    }
 }
 
 // Avoiding name mangling
@@ -98,6 +102,7 @@ extern "C" {
     void decodeDelaunatorPattern(char* inputFile, char* outputFile) {
         // long long start = get_now();
         char* output = _decode(inputFile);
+        platform_log("%s", output);
         
         // char* ret = new char;
         // strcpy(ret, output);
@@ -125,25 +130,37 @@ extern "C" {
         // Mat img = imgGenerator(delaunator, inputData, size);
         
         // imwrite(outputFile, img);
+        // ifstream in(inputFile, ios::in | ios::binary);
+        // string contents((std::istreambuf_iterator<char>(in)), 
+        // std::istreambuf_iterator<char>());
+        
+        // char inputData[contents.length() + 1];
+        // strcpy(inputData, contents.c_str());
+        platform_log("%s", inputData);
         _encode(inputData, outputFile);
+        platform_log("check");
 
         int tries = 0;
         char* ret = _decode(outputFile);
         while(strcmp(ret, inputData) != 0 && tries < 5) {
+            platform_log("%s", ret);
+            platform_log("try again: %d", tries + 1);
             _encode(inputData, outputFile);
             ret = _decode(outputFile);
             tries ++;
-            delete (ret);
         }
         // cout << "cpp [encodeDelaunatorPattern] Done\n";
         
         if(strcmp(ret, inputData) != 0) {
             // return (char*) "Please try again ";
+            platform_log("Fail");
             string o = "Error on encoding";
             o = o.append(ret);
-            delete (ret);
+            ret = 0;
             return (char*) o.c_str();
         }
+        ret = 0;
+        platform_log("Okay");
         return (char*) "OK";
     }
 }

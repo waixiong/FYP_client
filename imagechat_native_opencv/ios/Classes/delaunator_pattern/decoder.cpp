@@ -26,9 +26,12 @@ using namespace cv;
 using namespace std;
 
 Scalar formatColor(Scalar color) {
-    int b = floor(color[0] / 64) * 64 + 32;
-    int g = floor(color[1] / 64) * 64 + 32;
-    int r = floor(color[2] / 64) * 64 + 32;
+    // int b = floor(color[0] / 64) * 64 + 32;
+    // int g = floor(color[1] / 64) * 64 + 32;
+    // int r = floor(color[2] / 64) * 64 + 32;
+    int b = floor(color[0] / 32) * 32 + 16;
+    int g = floor(color[1] / 32) * 32 + 16;
+    int r = floor(color[2] / 32) * 32 + 16;
     if(b > 255) b = 255;
     if(g > 255) g = 255;
     if(r > 255) r = 255;
@@ -91,15 +94,18 @@ InfInt decodeFromTriangleColor(delaunator::Delaunator delaunator, vector<double>
     sort(triangles.begin(), triangles.end());
 
     // --- checking ---
-    __android_log_print(ANDROID_LOG_DEBUG, "flutter", "triangles:");
+    // __android_log_print(ANDROID_LOG_DEBUG, "flutter", );
+    // platform_log("triangles:");
     for(vector<size_t> triangle : triangles) {
-        __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t[%d, %d, %d]", triangle[0], triangle[1], triangle[2]);
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t[%d, %d, %d]", triangle[0], triangle[1], triangle[2]);
+        // platform_log("\t[%d, %d, %d]", triangle[0], triangle[1], triangle[2]);
     }
 
     InfInt data = InfInt();
     InfInt multipleCounter = InfInt(1);
 
-    __android_log_print(ANDROID_LOG_DEBUG, "flutter", "color:");
+    // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "color:");
+    // platform_log("color:");
     for (size_t i = 0; i < triangles.size(); i++) {
         // cout << triangles[i][0] << " " << triangles[i][1] << " " << triangles[i][2] << " \n" ;
         Point pointA = Point(static_cast<int>(delaunator.coords[2 * triangles[i][0]]), static_cast<int>(delaunator.coords[2 * triangles[i][0] + 1]));
@@ -113,24 +119,26 @@ InfInt decodeFromTriangleColor(delaunator::Delaunator delaunator, vector<double>
 
         Mat mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
         drawContours(mask, contours, 0, 255, -1);
-        string f = "/storage/emulated/0/Android/data/com.getitqec.imagechat/files/Pictures/"+to_string(i);
-        imwrite(f+".webp", mask);
+        // string f = "/storage/emulated/0/Android/data/com.getitqec.imagechat/files/Pictures/"+to_string(i);
+        // imwrite(f+".webp", mask);
         Scalar mean_val = mean(img, mask);
-        __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%f, %f, %f", mean_val[0], mean_val[1], mean_val[2]);
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%f, %f, %f", mean_val[0], mean_val[1], mean_val[2]);
+        // platform_log("\t\t%f, %f, %f", mean_val[0], mean_val[1], mean_val[2]);
         Scalar bgr = formatColor(mean_val);
-        __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%f, %f, %f", bgr[0], bgr[1], bgr[2]);
-
-        int ib = (int) bgr[0] / 64;
-        int ig = (int) bgr[1] / 64;
-        int ir = (int) bgr[2] / 64;
-        __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%d, %d, %d", ib, ig, ir);
- 
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%f, %f, %f", bgr[0], bgr[1], bgr[2]);
+        // platform_log("\t\t%f, %f, %f", bgr[0], bgr[1], bgr[2]);
+        int ib = (int) bgr[0] / 32;//64;
+        int ig = (int) bgr[1] / 32;//64;
+        int ir = (int) bgr[2] / 32;//64;
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%d, %d, %d", ib, ig, ir);
+        // platform_log("\t\t%d, %d, %d", ib, ig, ir);
         int dataRGB = ib;
-        dataRGB = dataRGB * 4 + ig;
-        dataRGB = dataRGB * 4 + ir;
-        __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t%d", dataRGB);
+        dataRGB = dataRGB * 8 + ig;
+        dataRGB = dataRGB * 8 + ir;
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t%d", dataRGB);
+        // platform_log("\t%d", dataRGB);
         data = data + multipleCounter * dataRGB;
-        multipleCounter *= 64;
+        multipleCounter *= 512;//64;
     }
 
     return data;
@@ -141,14 +149,18 @@ vector<double> decodePoints(Mat img) {
     // int n = 0;
     int maxSize = img.rows;
     Mat imgDraw = Mat::zeros( maxSize, maxSize, CV_8UC3 );
-    for(int r = 0; r < 4; r++) {
-        for(int g = 0; g < 4; g++) {
-            for(int b = 0; b < 4; b++) {
+    int _tempNum = 0;
+    platform_log("\t\tdecode2a");
+    for(int r = 0; r < 8; r++) {
+        for(int g = 0; g < 8; g++) {
+            for(int b = 0; b < 8; b++) {
                 Mat mask;
                 inRange(
                     img, 
-                    Scalar(b*64, g*64, r*64), 
-                    Scalar( b*64+63, g*64+63, r*64+63), 
+                    // Scalar(b*64, g*64, r*64), 
+                    // Scalar( b*64+63, g*64+63, r*64+63), 
+                    Scalar(b*32, g*32, r*32), 
+                    Scalar( b*32+31, g*32+31, r*32+31), 
                     mask
                 );
 
@@ -170,18 +182,23 @@ vector<double> decodePoints(Mat img) {
                             // points.push_back(p.x);
                             // points.push_back(p.y);
                         }
+                        _tempNum++;
                     } else if(approx.size() > 3 && peri >= 80 && area > 200) {
                         for(Point p : approx) {
                             points.push_back(p);
                             // points.push_back(p.x);
                             // points.push_back(p.y);
                         }
+                        _tempNum++;
                     }
                 }
             }
         }
     }
+    platform_log("\t\tNum of Tri: %d", _tempNum);
+    platform_log("\t\tNum of Pnt: %d", points.size());
 
+    platform_log("\t\tdecode2b");
     vector<vector<Point>> adjusted_points = {};
     for(Point point : points ) {
         bool insert = false;
@@ -206,7 +223,9 @@ vector<double> decodePoints(Mat img) {
     }
 
     // TODO: 
+    platform_log("\t\tdecode2c");
     if(!isPerfectSquare(points.size())) {
+        platform_log("\t\t\tsize: %d", points.size());
         throw("error on decoding points");
         // bool match = false;
         // int size = (int) round(sqrt(points.size()));
@@ -228,11 +247,13 @@ vector<double> decodePoints(Mat img) {
     vector<double> double_points = {};
     
     // --- checking ---
-    __android_log_print(ANDROID_LOG_DEBUG, "flutter", "points:");
+    // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "points:");
+    // platform_log("points:");
     for(Point point : points) {
         double_points.push_back(point.x);
         double_points.push_back(point.y);
-        __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t[%d, %d]", point.x, point.y);
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t[%d, %d]", point.x, point.y);
+        // platform_log("\t[%d, %d]", point.x, point.y);
     }
     
     return double_points;

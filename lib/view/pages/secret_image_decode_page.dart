@@ -66,7 +66,7 @@ class SecretImageDecodePage extends StatelessWidget {
                   children: [
                     Expanded(child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("Encode With " + (model.format == Format.Cheelaunator? "Cheelaunator" : "SiaPattern"), style: Theme.of(context).textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),),
+                      child: Text("Decode With " + (model.format == Format.Cheelaunator? "Cheelaunator" : "SiaPattern"), style: Theme.of(context).textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),),
                     )),
                     IconButton(
                       onPressed: () => _onClickSetting(model),
@@ -142,7 +142,7 @@ class SecretImageDecodePage extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 9,),
-                if(model.busy("encode")) 
+                if(model.busy("decode")) 
                   SizedBox(
                     height: 36, width: 36,
                     child: CircularProgressIndicator(),

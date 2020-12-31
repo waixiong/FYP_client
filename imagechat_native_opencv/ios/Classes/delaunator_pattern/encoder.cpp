@@ -79,24 +79,27 @@ Mat imgGenerator(delaunator::Delaunator d, char* inputData, long maxSize) {
             pointB, 
             pointC
         } };
- 
+
+        int r, g, b; 
         // InfInt data(inputData);
         if(data != 0) {
-            int rgb = (data % 64).toInt();
-            int r = rgb % 4;
-            int g = (rgb / 4) % 4;
-            int b = (rgb / 16) % 4;
-            data /= 64;
+            // int rgb = (data % 64).toInt();
+            int rgb = (data % 512).toInt();
+            r = rgb % 8;//4;
+            g = (rgb / 8) % 8;//4;
+            b = (rgb / 64) % 8;//4;
+            data /= 512;
             // drawContours(img, {contours}, 0, Scalar(b*64+32, g*64+32, r*64+32));
-            fillPoly(img, {contours}, Scalar(b*64+32, g*64+32, r*64+32));
+            // fillPoly(img, {contours}, Scalar(b*64+32, g*64+32, r*64+32));
         } else {
             // cout << "\tdone byte\n";
-            int r = rand() % 4;
-            int g = rand() % 4;
-            int b = rand() % 4;
+            r = rand() % 8;//4;
+            g = rand() % 8;//4;
+            b = rand() % 8;//4;
             // drawContours(img, {contours}, 0, Scalar(b*64+32, g*64+32, r*64+32));
-            fillPoly(img, {contours}, Scalar(b*64+32, g*64+32, r*64+32));
+            // fillPoly(img, {contours}, Scalar(b*64+32, g*64+32, r*64+32));
         }
+        fillPoly(img, {contours}, Scalar(b*32+16, g*32+16, r*32+16));
     }
 
     return img;

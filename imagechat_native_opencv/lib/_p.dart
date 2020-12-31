@@ -1,55 +1,53 @@
-// import 'package:starflut/starflut.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
-// Future<void> testCallPython() async {
-//     StarCoreFactory starcore = await Starflut.getFactory();
-//     StarServiceClass Service = await starcore.initSimple("test", "123", 0, 0, []);
-//     await starcore.regMsgCallBackP(
-//         (int serviceGroupID, int uMsg, Object wParam, Object lParam) async{
-//       print("$serviceGroupID  $uMsg   $wParam   $lParam");
-//       return null;
-//     });
-//     StarSrvGroupClass SrvGroup = await Service["_ServiceGroup"];
+// import 'package:aes_crypt/aes_crypt.dart';
+// import 'package:flutter_string_encryption/flutter_string_encryption.dart';
+import 'package:imagechat_native_opencv/_cryptor.dart';
 
-//     /*---script python--*/
-//     bool isAndroid = await Starflut.isAndroid();
-//     if( isAndroid == true ){
-//       await Starflut.copyFileFromAssets("test.py", "flutter_assets/starfiles","flutter_assets/starfiles");
-//       await Starflut.copyFileFromAssets("python3.8.zip", "flutter_assets/starfiles", null);  //desRelatePath must be null 
-//       await Starflut.copyFileFromAssets("zlib.cpython-36m.so", null,null);
-//       await Starflut.copyFileFromAssets("unicodedata.cpython-36m.so", null,null);
-//       await Starflut.loadLibrary("libpython3.6m.so");
-//     }
+main(List<String> args) async {
+  String password = 'p';
+  String intermediate = './tttt';
+  // String input = 'hey we are here for a great thing to start our new journey, the venture is loading';
+  String input = 'hey';
 
-//     String docPath = await Starflut.getDocumentPath();
-//     print("docPath = $docPath");
+  // var crypt = AesCrypt(password);
+  // // await File(intermediate).delete();
 
-//     String resPath = await Starflut.getResourcePath();
-//     print("resPath = $resPath");
+  // try {
+  //   await File(intermediate).delete();
+  // } catch(e) {
+  //   // ignore
+  // }
 
-//     dynamic rr1 = await SrvGroup.initRaw("python38", Service);
+  // intermediate = await crypt.encryptTextToFile(input, intermediate, utf16: true);
+  // String decryptedString = await crypt.decryptTextFromFile(intermediate, utf16: true);
 
-//     print("initRaw = $rr1");
-// 		var Result = await SrvGroup.loadRawModule("python", "", resPath + "/flutter_assets/starfiles/" + "testpy.py", false);
-//     print("loadRawModule = $Result");
+  // print(decryptedString);
+  // print(await File(intermediate).length());
+  // print((await File(intermediate).readAsBytes()).length);
 
-// 		dynamic python = await Service.importRawContext("python", "", false, "");
-//     print("python = "+ await python.getString());
 
-// 		StarObjectClass retobj = await python.call("tt", ["hello ", "world"]);
-//     print(await retobj[0]);
-//     print(await retobj[1]);
 
-//     print(await python["g1"]);
-        
-//     StarObjectClass yy = await python.call("yy", ["hello ", "world", 123]);
-//     print(await yy.call("__len__",[]));
+  // final cryptor = new PlatformStringCryptor();
+  // final String salt = await cryptor.generateSalt();
+  // print('Salt: $salt\n');
+  // final String key = await cryptor.generateKeyFromPassword(password, salt);
+  // print('Key: $key\n');
+  // final String encrypted = await cryptor.encrypt("A string to encrypt.", key);
+  // print('Encrypted: $encrypted\n');
+  // print('Len:s ${encrypted.length}\n');
+  // try {
+  //   final String decrypted = await cryptor.decrypt(encrypted, key);
+  //   print(decrypted); // - A string to encrypt.
+  // } on MacMismatchException {
+  //   // unable to decrypt (wrong key or forged data)
+  // }
 
-//     StarObjectClass multiply = await Service.importRawContext("python", "Multiply", true, "");
-//     StarObjectClass multiply_inst = await multiply.newObject(["", "", 33, 44]);
-//     print(await multiply_inst.getString());
 
-//     print(await multiply_inst.call("multiply", [11, 22]));
-
-//     await SrvGroup.clearService();
-// 		await starcore.moduleExit();
-//   }
+  String en = encrypt(input, password);
+  String de = decrypt(en, password);
+  print(en);
+  print(de);
+}

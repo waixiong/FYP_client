@@ -60,6 +60,7 @@ class SecretImageViewModel extends BaseViewModel {
   SecretImageViewModel({this.sendToChat});
 
   decode() async {
+    setBusyForObject("decode", true);
     String path;
     if(_image is NetworkImage) {
       var imageId = await ImageDownloader.downloadImage((_image as NetworkImage).url);
@@ -70,9 +71,9 @@ class SecretImageViewModel extends BaseViewModel {
     }
     try {
       if(format == Format.Cheelaunator) {
-        DelaunatorPattern.decodeDelaunatorPattern(path, externalDir.path+'/output');
+        _outputString = await DelaunatorPattern.decodeDelaunatorPattern(path, tempDir.path+'/output');
         // File(externalDir.path+'/output');
-        _outputString = await File(externalDir.path+'/output').readAsString();
+        // _outputString = await File(externalDir.path+'/output').readAsString();
       }
       else{
         log.i('Using SiaPattern');
@@ -95,7 +96,7 @@ class SecretImageViewModel extends BaseViewModel {
     // print(appDocDir.path);
     try {
       if(format == Format.Cheelaunator) {
-        var n = DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp');
+        var n = await DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp', intermediate: tempDir.path+'/input');
         log.i('from cpp: $n');
         _outputImg = FileImage(File(tempDir.path + '/img.webp'));
       } else {

@@ -1,6 +1,7 @@
 package io.flutter.plugins;
 
 import io.flutter.plugin.common.PluginRegistry;
+import com.github.sroddy.flutterstringencryption.FlutterStringEncryptionPlugin;
 
 /**
  * Generated file. Do not edit.
@@ -10,6 +11,7 @@ public final class GeneratedPluginRegistrant {
     if (alreadyRegisteredWith(registry)) {
       return;
     }
+    FlutterStringEncryptionPlugin.registerWith(registry.registrarFor("com.github.sroddy.flutterstringencryption.FlutterStringEncryptionPlugin"));
   }
 
   private static boolean alreadyRegisteredWith(PluginRegistry registry) {

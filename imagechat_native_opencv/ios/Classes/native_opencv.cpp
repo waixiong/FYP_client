@@ -8,24 +8,13 @@
 #include <android/log.h>
 #endif
 
+#include "util.cpp"
 #include "delaunator_pattern.cpp"
 
 using namespace cv;
 using namespace std;
 
 const string EOFBinary = "0000100";
-
-
-void platform_log(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-#ifdef __ANDROID__
-    __android_log_vprint(ANDROID_LOG_VERBOSE, "ndk", fmt, args);
-#else
-    vprintf(fmt, args);
-#endif
-    va_end(args);
-}
 
 map<string, Scalar> colours = {
 	{"0000", Scalar(0, 0, 128)},
