@@ -60,22 +60,30 @@ using namespace std;
 //     return ret;
 // }
 
-void _encode(char* inputData, char* outputFile) {
+void _encode(char* inputData, char* outputFile, int8_t type, int8_t colorFixed, int8_t fixedValue) {
     srand(time(0));
     platform_log("\tgenerate2");
     inputData = appendEndOfFile(inputData);
-    long size = calculateImgSize(inputData);
+    long size;
+    if(type == 0)
+        size = calculateImgSize(inputData);
+    else
+        size = calculateImgSize_1(inputData);
     platform_log("\tgenerate3 %d", size);
     vector<double> points = generatePoints(size);
     platform_log("\tgenerate4 points");
     delaunator::Delaunator delaunator(points);
     platform_log("\tgenerate4 Delaunator");
-    Mat img = imgGenerator(delaunator, inputData, size);
+    Mat img;
+    if(type == 0)
+        img = imgGenerator(delaunator, inputData, size);
+    else
+        img = imgGenerator_1(delaunator, inputData, size, colorFixed, fixedValue);
     platform_log("\tgenerate5");
     imwrite(outputFile, img);
 }
 
-char* _decode(char* inputFile) {
+char* _decode(char* inputFile, int8_t type, int8_t colorFixed) {
     srand(time(0));
     platform_log("\tdecode2");
     Mat inputImg = imread(inputFile);
@@ -85,7 +93,11 @@ char* _decode(char* inputFile) {
         platform_log("\tdecode3");
         delaunator::Delaunator delaunator(points);
 
-        InfInt data = decodeFromTriangleColor(delaunator, points, inputImg);
+        InfInt data;
+        if(type == 0) 
+            data = decodeFromTriangleColor(delaunator, points, inputImg);
+        else 
+            data = decodeFromTriangleColor_1(delaunator, points, inputImg, colorFixed);
         char* output = BigIntToBytes(data);
         output = checkEOF(output);
         platform_log("\tdecode4");
@@ -95,13 +107,28 @@ char* _decode(char* inputFile) {
     }
 }
 
+/*
+ * type [ 
+ *  0 - 512 colors of 8r * 8g * 8b,
+ *  1 - 64 colors of either 2 of (8r, 8g and 8b)
+ * ]
+ * colorFixed [
+ *  0 - red,
+ *  1 - green,
+ *  2 - blue
+ * ] <Valid if type = 1>
+ * fixedValue [
+ *  0 - 7
+ * ] <Valid if type = 1>
+*/
+
 // Avoiding name mangling
 extern "C" {
     // Attributes to prevent 'unused' function from being removed and to make it visible
     __attribute__((visibility("default"))) __attribute__((used))
-    void decodeDelaunatorPattern(char* inputFile, char* outputFile) {
+    void decodeDelaunatorPattern(char* inputFile, char* outputFile, int8_t type, int8_t colorFixed) {
         // long long start = get_now();
-        char* output = _decode(inputFile);
+        char* output = _decode(inputFile, type, colorFixed);
         platform_log("%s", output);
         
         // char* ret = new char;
@@ -117,7 +144,7 @@ extern "C" {
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
-    char* encodeDelaunatorPattern(char* inputData, char* outputFile) {
+    char* encodeDelaunatorPattern(char* inputData, char* outputFile, int8_t type, int8_t colorFixed, int8_t fixedValue) {
         // long long start = get_now();
         // srand(time(0));
 
@@ -137,22 +164,23 @@ extern "C" {
         // char inputData[contents.length() + 1];
         // strcpy(inputData, contents.c_str());
         platform_log("%s", inputData);
-        _encode(inputData, outputFile);
+        _encode(inputData, outputFile, type, colorFixed, fixedValue);
         platform_log("check");
 
         int tries = 0;
-        char* ret = _decode(outputFile);
+        char* ret = _decode(outputFile, type, colorFixed);
         while(strcmp(ret, inputData) != 0 && tries < 5) {
-            platform_log("%s", ret);
+            platform_log("decoded: %s", ret);
             platform_log("try again: %d", tries + 1);
-            _encode(inputData, outputFile);
-            ret = _decode(outputFile);
+            _encode(inputData, outputFile, type, colorFixed, fixedValue);
+            ret = _decode(outputFile, type, colorFixed);
             tries ++;
         }
         // cout << "cpp [encodeDelaunatorPattern] Done\n";
         
         if(strcmp(ret, inputData) != 0) {
             // return (char*) "Please try again ";
+            platform_log("decoded: %s", ret);
             platform_log("Fail");
             string o = "Error on encoding";
             o = o.append(ret);

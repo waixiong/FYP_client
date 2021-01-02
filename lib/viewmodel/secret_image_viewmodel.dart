@@ -8,6 +8,7 @@ import 'package:imageChat/service/chat_service.dart';
 import 'package:imageChat/service/file_service.dart';
 import 'package:imageChat/util/random.dart';
 import 'package:imageChat/view/pages/chats_list_page.dart';
+import 'package:imageChat/view/widgets/color_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stacked/stacked.dart';
 
@@ -34,7 +35,11 @@ class SecretImageViewModel extends BaseViewModel {
   // final TextEditingController decodedText = TextEditingController();
   // final String salt = "a=";
   final String salt = "CXcVvxIMk6y0cPbTsF9a5IB15Pw04psEoAEJQ9EcZBJWaqYA29ZubQZPSOn8+xN9yJq7xWIUPwrOHFHuK5gUn6uF66kPy120SXxESFMuMCBLMWtTGyy743Ge5C/PQ5LPRs4qAOe0Ea/nPShkF0mA0nXT7Rt76/6VOm6qENNuUwE=";
+  
   Format format = Format.SiaPattern;
+  bool custom = false;
+  FixedColor fixedColor = FixedColor.Green;
+  int fixedValue = 8;
 
   final Future Function(String, String) sendToChat;
 
@@ -45,6 +50,9 @@ class SecretImageViewModel extends BaseViewModel {
   String _outputString;
   FileImage get outputImg => _outputImg;
   String get outputString => _outputString;
+
+  String decodeErr;
+  String encodeErr;
 
   imageFromNetwork(String url) {
     if(url != null)
@@ -71,11 +79,19 @@ class SecretImageViewModel extends BaseViewModel {
     }
     try {
       if(format == Format.Cheelaunator) {
-        _outputString = await DelaunatorPattern.decodeDelaunatorPattern(path, tempDir.path+'/output');
-        // File(externalDir.path+'/output');
-        // _outputString = await File(externalDir.path+'/output').readAsString();
-      }
-      else{
+        String n = await DelaunatorPattern.decodeDelaunatorPattern(
+          path, 
+          tempDir.path+'/output', password: secretText.text,
+          type: custom? 1 : 0,
+          colorFixed: fixedColor == FixedColor.Red? 0 : fixedColor == FixedColor.Green? 1 : 2 
+        );
+        if(n == 'decrypt error' || n == 'isolate issue, please run again') {
+          _outputString = null;
+          decodeErr = n;
+        } else {
+          _outputString = n;
+        }
+      } else{
         log.i('Using SiaPattern');
         String out = SiaPattern.decodeImage(path);
         _outputString = _decrypt(out);
@@ -96,9 +112,21 @@ class SecretImageViewModel extends BaseViewModel {
     // print(appDocDir.path);
     try {
       if(format == Format.Cheelaunator) {
-        var n = await DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp', intermediate: tempDir.path+'/input');
+        var n = await DelaunatorPattern.encodeDelaunatorPattern(
+          inputText.text, 
+          tempDir.path + '/img.webp', 
+          password: secretText.text,
+          type: custom? 1 : 0,
+          colorFixed: fixedColor == FixedColor.Red? 0 : fixedColor == FixedColor.Green? 1 : 2,
+          fixedValue: fixedValue
+        );
         log.i('from cpp: $n');
-        _outputImg = FileImage(File(tempDir.path + '/img.webp'));
+        if(n == 'Done') {
+          _outputImg = FileImage(File(tempDir.path + '/img.webp'));
+        } else {
+          _outputImg = null;
+          encodeErr = n;
+        }
       } else {
         String encryptedData = inputText.text;
         if(secretText.text.length != 0){

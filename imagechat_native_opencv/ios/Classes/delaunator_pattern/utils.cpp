@@ -36,7 +36,6 @@ char* checkEOF(char* array) {
     char* ret = new char[index + 1];
     memcpy( ret, array, index );
     ret[index] = '\0';
-    delete (array);
     return ret;
 }
 

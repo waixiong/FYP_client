@@ -43,6 +43,7 @@ const Color PRIMARY_COLOR_FOR_DARK = Color(0xFF4F72E6);
 const Color RED_COLOR = Color(0xFFFF3165);
 const Color GREEN_COLOR = Color(0xFF78CBBB);
 const Color NIGHT_COLOR = Color(0xFF0F2027);
+const Color LIGHT_COLOR = Color(0xFFF0DFD8);
 
 List<Color> PIE_COLORS = [
   Color(0xFF024481), 
@@ -123,6 +124,21 @@ final lightTheme = ThemeData(
   iconTheme: IconThemeData(color: _bgDark),
   buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.accent),
   textTheme: lightTextTheme,
+  inputDecorationTheme: InputDecorationTheme(
+    fillColor: Colors.grey[200],
+    filled: true,
+    labelStyle: TextStyle(
+        color: Colors.black),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+          color: Colors.black),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  )
 );
 
 final darkTheme = ThemeData(
@@ -173,6 +189,21 @@ final darkTheme = ThemeData(
   iconTheme: IconThemeData(color: _bgLight),
   buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.accent),
   textTheme: darkTextTheme,
+  inputDecorationTheme: InputDecorationTheme(
+    fillColor: Colors.grey[800],
+    filled: true,
+    labelStyle: TextStyle(
+        color: Colors.white),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+          color: Colors.white),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  )
 );
 
 

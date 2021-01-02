@@ -76,19 +76,19 @@ class ProfileLayout extends StatelessWidget {
           Opacity(opacity: 0.7, child: Text(user?.email, style: Theme.of(context).textTheme.caption,)),
           SizedBox(height: 16.0),
 
-          Container(
-            height: 8.0 * 4,
-            width: 8.0 * 20,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0 * 3),
-              gradient: LinearGradient(colors: [Colors.purple, Colors.blue], begin: Alignment.topRight, end: Alignment.centerLeft)
-            ),
-            child: Center(
-              child: Text('Upgrade to PRO', 
-                style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white),
-              ),
-            ),
-          ),
+          // Container(
+          //   height: 8.0 * 4,
+          //   width: 8.0 * 20,
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(8.0 * 3),
+          //     gradient: LinearGradient(colors: [Colors.purple, Colors.blue], begin: Alignment.topRight, end: Alignment.centerLeft)
+          //   ),
+          //   child: Center(
+          //     child: Text('Upgrade to PRO', 
+          //       style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -144,12 +144,12 @@ class ProfileLayout extends StatelessWidget {
                 ),
                 ProfileListItem(
                   icon: LineAwesomeIcons.question_circle,
-                  text: 'Help & Support',
+                  text: 'About',
                 ),
-                ProfileListItem(
-                  icon: LineAwesomeIcons.cog,
-                  text: 'Settings',
-                ),
+                // ProfileListItem(
+                //   icon: LineAwesomeIcons.cog,
+                //   text: 'Settings',
+                // ),
                 ProfileListItem(
                   icon: LineAwesomeIcons.user_plus,
                   text: 'Invite a Friend',

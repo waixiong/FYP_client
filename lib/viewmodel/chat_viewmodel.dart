@@ -68,20 +68,6 @@ class ChatViewModel extends BaseViewModel {
 
   init() async {
     setBusy(true);
-    // try {
-    //   String output = DelaunatorPattern.encodeDelaunatorPattern('hello world', tempDir.path + '/img.webp');
-    //   log.i('OpenCV: '+output);
-    // } catch(e) {
-    //   log.e('ImageChat Err');
-    //   log.e(e);
-    // }
-    // try {
-    //   String output = nativeCV.opencvVersion();
-    //   log.i('OpenCV Version: '+output);
-    // } catch(e) {
-    //   log.e('Native Err');
-    //   log.e(e);
-    // }
     var userMessageBox = db.getUserMessagesBox();
     _messageListener = userMessageBox.listenable(keys: [targetUser.uid]);
     _messageListener.addListener(() async {

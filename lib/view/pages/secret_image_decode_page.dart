@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/format_selection_dialog.dart';
 import 'package:imageChat/viewmodel/secret_image_viewmodel.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
@@ -22,32 +23,7 @@ class SecretImageDecodePage extends StatelessWidget {
     
     _onClickSetting(SecretImageViewModel model) async {
       showDialog(context: context, builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return SimpleDialog(
-              title: Text('Format Setting'),
-              children: [
-                DropdownButton<Format>(
-                  items: [
-                    DropdownMenuItem<Format>(
-                      child: Text('Sia Pattern'),
-                      value: Format.SiaPattern,
-                    ),
-                    DropdownMenuItem<Format>(
-                      child: Text('Cheelaunator'),
-                      value: Format.Cheelaunator,
-                    )
-                  ], 
-                  onChanged: (value) {
-                    model.changePatternFormat(value);
-                    setState((){});
-                  },
-                  value: model.format,
-                )
-              ],
-            );
-          }
-        );
+        return FormatSelectionDialog(model,);
       });
     }
 
@@ -76,7 +52,7 @@ class SecretImageDecodePage extends StatelessWidget {
                 ),
                 StatefulBuilder(
                   builder: (context, setState) => TextFormField(
-                    enabled: model.isBusy ? false : model.busy("encode")? false : model.busy("decode")? false : model.format == Format.Cheelaunator? false : true,
+                    enabled: model.isBusy ? false : model.busy("encode")? false : model.busy("decode")? false : true,
                     controller: model.secretText,
                     focusNode: _secretNode,
                     onEditingComplete: () => _editingComplete(),
@@ -86,10 +62,7 @@ class SecretImageDecodePage extends StatelessWidget {
                     obscureText: _obscureText,
                     autocorrect: false,
                     decoration: InputDecoration(
-                      fillColor: Colors.grey[200],
-                      filled: true,
-                      labelText: "Secret (Optional)",
-                      labelStyle: TextStyle(color: Colors.black,),
+                      labelText: "Password (Optional)",
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
@@ -97,15 +70,6 @@ class SecretImageDecodePage extends StatelessWidget {
                           });
                         },
                         icon: Icon(Icons.remove_red_eye),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.black),
-                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                   ),
@@ -160,13 +124,18 @@ class SecretImageDecodePage extends StatelessWidget {
                             // border: Border.all(),
                             // shape: BoxShape.circle,
                             borderRadius: BorderRadius.circular(9),
-                            color: Colors.grey[200],
+                            color: Theme.of(context).inputDecorationTheme.fillColor,
                           ),
                           child: SingleChildScrollView(
                             child: SelectableText(model.outputString),
                           ),
                         )
                       ]
+                    )
+                  else if(model.decodeErr != null)
+                    Padding(
+                      padding: EdgeInsets.all(9),
+                      child: Text(model.decodeErr, style: TextStyle(color: Colors.red),),
                     ),
                 SizedBox(height: 120,)
               ],

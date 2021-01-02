@@ -144,6 +144,75 @@ InfInt decodeFromTriangleColor(delaunator::Delaunator delaunator, vector<double>
     return data;
 }
 
+InfInt decodeFromTriangleColor_1(delaunator::Delaunator delaunator, vector<double> points, Mat img, int8_t colorFixed) {
+    // Mat cloneImg = Mat::zeros(img.rows, img.cols, CV_8UC3);
+    vector<vector<size_t>> triangles = {};
+    for (size_t i = 0; i < delaunator.triangles.size(); i+=3) {
+    	vector<size_t> triangle = { delaunator.triangles[i], delaunator.triangles[i+1], delaunator.triangles[i+2] };
+        sort(triangle.begin(), triangle.end());
+        triangles.push_back(triangle);
+    }
+    sort(triangles.begin(), triangles.end());
+
+    // --- checking ---
+    // __android_log_print(ANDROID_LOG_DEBUG, "flutter", );
+    // platform_log("triangles:");
+    for(vector<size_t> triangle : triangles) {
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t[%d, %d, %d]", triangle[0], triangle[1], triangle[2]);
+        // platform_log("\t[%d, %d, %d]", triangle[0], triangle[1], triangle[2]);
+    }
+
+    InfInt data = InfInt();
+    InfInt multipleCounter = InfInt(1);
+
+    // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "color:");
+    // platform_log("color:");
+    for (size_t i = 0; i < triangles.size(); i++) {
+        // cout << triangles[i][0] << " " << triangles[i][1] << " " << triangles[i][2] << " \n" ;
+        Point pointA = Point(static_cast<int>(delaunator.coords[2 * triangles[i][0]]), static_cast<int>(delaunator.coords[2 * triangles[i][0] + 1]));
+        Point pointB = Point(static_cast<int>(delaunator.coords[2 * triangles[i][1]]), static_cast<int>(delaunator.coords[2 * triangles[i][1] + 1]));
+        Point pointC = Point(static_cast<int>(delaunator.coords[2 * triangles[i][2]]), static_cast<int>(delaunator.coords[2 * triangles[i][2] + 1]));
+        vector<vector<Point> > contours{ {
+            pointA, 
+            pointB, 
+            pointC
+        } };
+
+        Mat mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
+        drawContours(mask, contours, 0, 255, -1);
+        // string f = "/storage/emulated/0/Android/data/com.getitqec.imagechat/files/Pictures/"+to_string(i);
+        // imwrite(f+".webp", mask);
+        Scalar mean_val = mean(img, mask);
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%f, %f, %f", mean_val[0], mean_val[1], mean_val[2]);
+        // platform_log("\t\t%f, %f, %f", mean_val[0], mean_val[1], mean_val[2]);
+        Scalar bgr = formatColor(mean_val);
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%f, %f, %f", bgr[0], bgr[1], bgr[2]);
+        // platform_log("\t\t%f, %f, %f", bgr[0], bgr[1], bgr[2]);
+        int i1 = 0;
+        int i2 = 0;
+        if(colorFixed == 0) {
+            i1 = (int) bgr[0] / 32;
+            i2 = (int) bgr[1] / 32;
+        } else if(colorFixed == 1) {
+            i1 = (int) bgr[0] / 32;
+            i2 = (int) bgr[2] / 32;
+        } else {
+            i1 = (int) bgr[1] / 32;
+            i2 = (int) bgr[2] / 32;
+        }
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t\t%d, %d, %d", ib, ig, ir);
+        // platform_log("\t\t%d, %d, %d", ib, ig, ir);
+        int dataRGB = i1;
+        dataRGB = dataRGB * 8 + i2;
+        // __android_log_print(ANDROID_LOG_DEBUG, "flutter", "\t%d", dataRGB);
+        // platform_log("\t%d", dataRGB);
+        data = data + multipleCounter * dataRGB;
+        multipleCounter *= 64;//64;
+    }
+
+    return data;
+}
+
 vector<double> decodePoints(Mat img) {
     vector<Point> points = {};
     // int n = 0;
