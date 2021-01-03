@@ -43,7 +43,6 @@ Compile Hive model
 ## Application View
 
 ### Authentication
-
 ![Login Page](./doc/photo_2021-01-04_01-37-49.jpg)  
 ![Google Login](./doc/photo_2021-01-04_01-37-47.jpg)
 
@@ -53,10 +52,9 @@ Compile Hive model
 ![Error on encoding](./doc/photo_2021-01-04_01-37-33.jpg)
 ![Image Generated](./doc/photo_2021-01-04_01-37-26.jpg)
 
-
 ![Decrypt Error](./doc/photo_2021-01-04_01-37-17.jpg)
 ![Decrypt Success](./doc/photo_2021-01-04_01-37-14.jpg)
 
-
+### Messaging
 ![Image Messaging](./doc/photo_2021-01-04_01-37-21.jpg)
 ![Text Messaging](./doc/photo_2021-01-04_01-37-09.jpg)
