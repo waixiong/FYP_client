@@ -206,9 +206,10 @@ bool smallerContour(vector<Point> contour, vector<Point> contour1) {//for sortin
 	}
 }
 
-string decodeImage(string filePath) {
+string _decodeImage(string filePath) {
 	Mat imageGray, threshOutput;
 	Mat image = imread(filePath);
+	platform_log("Processing 2");
 	cvtColor(image, imageGray, COLOR_BGR2GRAY);
 	threshold(imageGray, threshOutput, 200, 200, 0);
 	//imshow("thresh", threshOutput);
@@ -217,6 +218,7 @@ string decodeImage(string filePath) {
 	findContours(threshOutput, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
 	sort(contours.begin(), contours.end(), smallerContour);
 	contours.erase(contours.begin());
+	platform_log("Processing 3");
 	string data = "";
 	for (int i = 0; i < contours.size(); i++) {
 		Rect contour = boundingRect(contours[i]);
@@ -224,6 +226,7 @@ string decodeImage(string filePath) {
 		string currentData = decode(colour);
 		data += currentData;
 	}
+	platform_log("Processing 4");
 	//int index = data.find(EOFBinary);
 	//data = data.substr(0, index);
 	string secretMessage = "";
@@ -254,27 +257,32 @@ extern "C" {
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
-        void generateImage(char* dataBytes, char* outputImagePath, char* type) {
-            long long start = get_now();
-            string data = string(dataBytes);
-            string imageType = string(type);
-            Mat outputImage = encodeImage(data, imageType);
+	void generateImage(char* dataBytes, char* outputImagePath, char* type) {
+		long long start = get_now();
+		string data = string(dataBytes);
+		string imageType = string(type);
+		Mat outputImage = encodeImage(data, imageType);
 
-            imwrite(outputImagePath, outputImage);
+		imwrite(outputImagePath, outputImage);
 
-            int evalInMillis = static_cast<int>(get_now() - start);
-            platform_log("Processing done in %dms\n", evalInMillis);
+		int evalInMillis = static_cast<int>(get_now() - start);
+		platform_log("Processing done in %dms\n", evalInMillis);
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
-    string decodeImage(char* inputImagePath) {
+    void decodeImage(char* inputImagePathChar, char* outputFileChar) {
         long long start = get_now();
-        
-        string decodedBytes = decodeImage(inputImagePath);
-        
+        platform_log("Processing 1");
+		string inputImagePath = string(inputImagePathChar);
+        string decodedBytes = _decodeImage(inputImagePath);
+		string outputFile = string(outputFileChar);
+        platform_log("Processing 5");
         int evalInMillis = static_cast<int>(get_now() - start);
         platform_log("Processing done in %dms\n", evalInMillis);
+		platform_log("Done: %s", decodedBytes.c_str());
 
-        return decodedBytes;
+		ofstream OutFile(outputFile);
+        OutFile << decodedBytes;
+        OutFile.close();
     }
 }

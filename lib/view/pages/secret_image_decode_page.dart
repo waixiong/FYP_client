@@ -107,9 +107,11 @@ class SecretImageDecodePage extends StatelessWidget {
                 ),
                 SizedBox(height: 9,),
                 if(model.busy("decode")) 
-                  SizedBox(
-                    height: 36, width: 36,
-                    child: CircularProgressIndicator(),
+                  Center(
+                    child: SizedBox(
+                      height: 36, width: 36,
+                      child: CircularProgressIndicator(),
+                    ),
                   )
                 else 
                   if(model.outputString != null)

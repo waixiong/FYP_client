@@ -189,6 +189,7 @@ extern "C" {
             platform_log("Fail");
             string o = "Error on encoding";
             o = o.append(ret);
+            remove(outputFile.c_str());
             // ret = 0;
             return (char*) o.c_str();
         }

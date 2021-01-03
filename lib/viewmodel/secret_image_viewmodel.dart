@@ -93,8 +93,14 @@ class SecretImageViewModel extends BaseViewModel {
         }
       } else{
         log.i('Using SiaPattern');
-        String out = SiaPattern.decodeImage(path);
-        _outputString = _decrypt(out);
+        String out = await SiaPattern.decodeImage(path, tempDir.path+'/output');
+        log.i('Done SiaPattern $out');
+        if(secretText.text.length != 0){
+          await _decrypt(out);
+          // _outputString = await _decrypt(out);
+        } else {
+          _outputString = out;
+        }
       }
       // _outputImg = FileImage(File(tempDir.path + '/img.webp'));
       setBusyForObject("decode", false);
@@ -110,6 +116,9 @@ class SecretImageViewModel extends BaseViewModel {
     log.i('start encode');
     // await File(tempDir.path + '/img.webp').delete();
     // print(appDocDir.path);
+    try {
+      await File(tempDir.path + '/img.webp').delete();
+    } catch(e) {} // ignore
     try {
       if(format == Format.Cheelaunator) {
         var n = await DelaunatorPattern.encodeDelaunatorPattern(
@@ -132,8 +141,13 @@ class SecretImageViewModel extends BaseViewModel {
         if(secretText.text.length != 0){
           encryptedData = await _encrypt();
         }
-        SiaPattern.generateImage(encryptedData, tempDir.path + '/img.webp', 'Image');
-        _outputImg = FileImage(File(tempDir.path + '/img.webp'));
+        await SiaPattern.generateImage(encryptedData, tempDir.path + '/img.webp', 'Image');
+        if(await File(tempDir.path + '/img.webp').exists()) {
+          _outputImg = FileImage(File(tempDir.path + '/img.webp'));
+        } else {
+          _outputImg = null;
+          encodeErr = 'Error on SiaPattern Encoding';
+        }        
       }
       setBusyForObject("encode", false);
       log.i('done encode');
@@ -153,17 +167,20 @@ class SecretImageViewModel extends BaseViewModel {
     return encryptedData;
   }
 
-  _decrypt(String encryptedData) async{
+  Future<String> _decrypt(String encryptedData) async{
     final cryptor = new PlatformStringCryptor();
     String secretKey = secretText.text;
     try {
       String key = await cryptor.generateKeyFromPassword(secretKey, salt);
       String decryptedData = await cryptor.decrypt(encryptedData, key);
       _outputString = decryptedData;
+      return _outputString;
     } on MacMismatchException {
       log.e("wrongly decrypted");
-      _outputString = "Can't decrypt the image";
+      _outputString = null;
+      decodeErr = "Can't decrypt the image";
     }
+    return _outputString;
   }
   
   changePatternFormat(Format f) {
