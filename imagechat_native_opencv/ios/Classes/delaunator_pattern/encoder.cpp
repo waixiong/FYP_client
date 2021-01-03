@@ -25,7 +25,7 @@
 using namespace cv;
 using namespace std;
 
-Mat imgGenerator(delaunator::Delaunator d, char* inputData, long maxSize) {
+Mat imgGenerator(delaunator::Delaunator d, string inputData, long maxSize) {
     vector<vector<size_t>> triangles = {};
     for (size_t i = 0; i < d.triangles.size(); i+=3) {
     	vector<size_t> triangle = { d.triangles[i], d.triangles[i+1], d.triangles[i+2] };
@@ -38,7 +38,7 @@ Mat imgGenerator(delaunator::Delaunator d, char* inputData, long maxSize) {
     // Mat img = Mat::zeros( maxSize, maxSize, 3);
 
     // InfInt data = InfInt(inputData);
-    InfInt data = BigIntFromBytes(inputData);
+    InfInt data = BigIntFromBytes(inputData.c_str());
     
     for (size_t i = 0; i < triangles.size(); i++) {
         // cout << triangles[i][0] << " " << triangles[i][1] << " " << triangles[i][2] << " \n" ;
@@ -76,7 +76,7 @@ Mat imgGenerator(delaunator::Delaunator d, char* inputData, long maxSize) {
     return img;
 }
 
-Mat imgGenerator_1(delaunator::Delaunator d, char* inputData, long maxSize, int8_t colorFixed, int8_t fixedValue) {
+Mat imgGenerator_1(delaunator::Delaunator d, string inputData, long maxSize, int8_t colorFixed, int8_t fixedValue) {
     vector<vector<size_t>> triangles = {};
     for (size_t i = 0; i < d.triangles.size(); i+=3) {
     	vector<size_t> triangle = { d.triangles[i], d.triangles[i+1], d.triangles[i+2] };
@@ -89,7 +89,7 @@ Mat imgGenerator_1(delaunator::Delaunator d, char* inputData, long maxSize, int8
     // Mat img = Mat::zeros( maxSize, maxSize, 3);
 
     // InfInt data = InfInt(inputData);
-    InfInt data = BigIntFromBytes(inputData);
+    InfInt data = BigIntFromBytes(inputData.c_str());
     
     for (size_t i = 0; i < triangles.size(); i++) {
         // cout << triangles[i][0] << " " << triangles[i][1] << " " << triangles[i][2] << " \n" ;
@@ -196,10 +196,10 @@ vector<double> generatePoints(long maxSize) {
     return points;
 }
 
-long calculateImgSize(char* inputData) {
+long calculateImgSize(string inputData) {
     long maxSize = 0;
     long bytes = 0;
-    while(strlen(inputData) > bytes) {
+    while(inputData.length() > bytes) {
         maxSize += 250;
         // long numOfPoints = (long) pow(maxSize/50 + 1, 2);
         long numOfTriangle = (long) round(2 * pow((maxSize/50), 2));
@@ -208,10 +208,10 @@ long calculateImgSize(char* inputData) {
     return maxSize;
 }
 
-long calculateImgSize_1(char* inputData) {
+long calculateImgSize_1(string inputData) {
     long maxSize = 0;
     long bytes = 0;
-    while(strlen(inputData) > bytes) {
+    while(inputData.length() > bytes) {
         maxSize += 250;
         // long numOfPoints = (long) pow(maxSize/50 + 1, 2);
         long numOfTriangle = (long) round(2 * pow((maxSize/50), 2));

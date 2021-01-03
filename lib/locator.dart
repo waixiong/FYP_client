@@ -44,6 +44,13 @@ void setupLocator() {
 
 void setupChatService(String accessToken) {
   try {
+    locator.unregister(instance: locator<DB>());
+  } catch(e) {
+    _log.i('No type DB is registered inside GetIt.');
+  }
+  locator.registerLazySingleton(() => DB());
+  
+  try {
     locator.unregister(instance: locator<ChatService>());
   } catch(e) {
     _log.i('No type ChatService is registered inside GetIt.');
@@ -54,11 +61,4 @@ void setupChatService(String accessToken) {
   locator.registerLazySingleton(() => s);
   s.accessToken = accessToken;
   s.connect();
-
-  try {
-    locator.unregister(instance: locator<DB>());
-  } catch(e) {
-    _log.i('No type ChatService is registered inside GetIt.');
-  }
-  locator.registerLazySingleton(() => DB());
 }

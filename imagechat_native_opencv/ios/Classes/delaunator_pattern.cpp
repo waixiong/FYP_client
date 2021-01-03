@@ -60,7 +60,7 @@ using namespace std;
 //     return ret;
 // }
 
-void _encode(char* inputData, char* outputFile, int8_t type, int8_t colorFixed, int8_t fixedValue) {
+void _encode(string inputData, string outputFile, int8_t type, int8_t colorFixed, int8_t fixedValue) {
     srand(time(0));
     platform_log("\tgenerate2");
     inputData = appendEndOfFile(inputData);
@@ -83,7 +83,7 @@ void _encode(char* inputData, char* outputFile, int8_t type, int8_t colorFixed, 
     imwrite(outputFile, img);
 }
 
-char* _decode(char* inputFile, int8_t type, int8_t colorFixed) {
+string _decode(string inputFile, int8_t type, int8_t colorFixed) {
     srand(time(0));
     platform_log("\tdecode2");
     Mat inputImg = imread(inputFile);
@@ -98,7 +98,7 @@ char* _decode(char* inputFile, int8_t type, int8_t colorFixed) {
             data = decodeFromTriangleColor(delaunator, points, inputImg);
         else 
             data = decodeFromTriangleColor_1(delaunator, points, inputImg, colorFixed);
-        char* output = BigIntToBytes(data);
+        string output = BigIntToBytes(data);
         output = checkEOF(output);
         platform_log("\tdecode4");
         return output;
@@ -126,10 +126,13 @@ char* _decode(char* inputFile, int8_t type, int8_t colorFixed) {
 extern "C" {
     // Attributes to prevent 'unused' function from being removed and to make it visible
     __attribute__((visibility("default"))) __attribute__((used))
-    void decodeDelaunatorPattern(char* inputFile, char* outputFile, int8_t type, int8_t colorFixed) {
+    void decodeDelaunatorPattern(char* inputFileChar, char* outputFileChar, int8_t type, int8_t colorFixed) {
         // long long start = get_now();
-        char* output = _decode(inputFile, type, colorFixed);
-        platform_log("%s", output);
+        string inputFile = string(inputFileChar);
+        string outputFile = string(outputFileChar);
+
+        string output = _decode(inputFile, type, colorFixed);
+        platform_log("%s", output.c_str());
         
         // char* ret = new char;
         // strcpy(ret, output);
@@ -144,7 +147,7 @@ extern "C" {
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
-    char* encodeDelaunatorPattern(char* inputData, char* outputFile, int8_t type, int8_t colorFixed, int8_t fixedValue) {
+    char* encodeDelaunatorPattern(char* inputChar, char* outputFileChar, int8_t type, int8_t colorFixed, int8_t fixedValue) {
         // long long start = get_now();
         // srand(time(0));
 
@@ -163,14 +166,16 @@ extern "C" {
         
         // char inputData[contents.length() + 1];
         // strcpy(inputData, contents.c_str());
-        platform_log("%s", inputData);
+        string inputData = string(inputChar);
+        string outputFile = string(outputFileChar);
+        platform_log("%s", inputData.c_str());
         _encode(inputData, outputFile, type, colorFixed, fixedValue);
         platform_log("check");
 
         int tries = 0;
-        char* ret = _decode(outputFile, type, colorFixed);
-        while(strcmp(ret, inputData) != 0 && tries < 5) {
-            platform_log("decoded: %s", ret);
+        string ret = _decode(outputFile, type, colorFixed);
+        while(ret.compare(inputData) != 0 && tries < 5) {
+            platform_log("decoded: %s", ret.c_str());
             platform_log("try again: %d", tries + 1);
             _encode(inputData, outputFile, type, colorFixed, fixedValue);
             ret = _decode(outputFile, type, colorFixed);
@@ -178,16 +183,16 @@ extern "C" {
         }
         // cout << "cpp [encodeDelaunatorPattern] Done\n";
         
-        if(strcmp(ret, inputData) != 0) {
+        if(ret.compare(inputData) != 0) {
             // return (char*) "Please try again ";
-            platform_log("decoded: %s", ret);
+            platform_log("decoded: %s", ret.c_str());
             platform_log("Fail");
             string o = "Error on encoding";
             o = o.append(ret);
-            ret = 0;
+            // ret = 0;
             return (char*) o.c_str();
         }
-        ret = 0;
+        // ret = 0;
         platform_log("Okay");
         return (char*) "OK";
     }

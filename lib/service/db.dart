@@ -76,7 +76,7 @@ class DB extends ChangeNotifier {
   }
 
   List<String> getMessagesListByUser(String id) {
-    var value = Hive.box<List<String>>(HiveBoxes.userMessages).get(id);
+    var value = Hive.box<List<String>>(HiveBoxes.userMessages).get(id, defaultValue: []);
     // if(!_messages.containsKey(id)) {
     //   return [];
     // }
@@ -101,7 +101,7 @@ class DB extends ChangeNotifier {
     if(old == null) {
       log.i('\tadd to user');
       var mBox = Hive.box<List<String>>(HiveBoxes.userMessages);
-      var messageList = mBox.get(target);
+      var messageList = mBox.get(target, defaultValue: []);
       messageList.add(message.id);
       mBox.put(target, messageList);
     } else {
@@ -163,7 +163,7 @@ class DB extends ChangeNotifier {
       } else {
         m = _messages[messagesIds[i]];
       }
-      values.add(m);
+      if(m != null) values.add(m);
     }
 
     return values;
