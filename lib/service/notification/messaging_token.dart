@@ -39,6 +39,20 @@ class MessagingTokenService extends ChangeNotifier {
     }
   }
 
+  Future<void> sendInvitation(String email, String name) async {
+    Map<String, dynamic> body = {
+      "rep_name": name,
+      "rep_email": email,
+    };
+    try {
+      await locator<API>().post(service, '/api/notification/invite', body);
+    } on ApiError catch(e) {
+      throw(e);
+    } catch(e) {
+      throw(e);
+    }
+  }
+
   // Future<void> getSetting() async {
   //   try {
   //     Map result = await locator<API>().get(service, '/api/notification/setting');

@@ -7,6 +7,7 @@ import './service/auth_service.dart';
 import './service/chat_service.dart';
 import './service/notification/messaging_token.dart';
 import './service/notification/push_notification.dart';
+import './service/mail_service.dart';
 import './util/network_config.dart';
 import 'logger.dart';
 import 'dart:io';
@@ -40,6 +41,8 @@ void setupLocator() {
   locator.registerLazySingleton(() => MessagingTokenService(service: 'https://imagechat.getitqec.com'));
   locator.registerLazySingleton(() => PushNotificationsManager());
   locator.registerLazySingleton(() => FileService(service: 'https://imagechat.getitqec.com'));
+
+  locator.registerLazySingleton(() => MailService());
 }
 
 void setupChatService(String accessToken) {

@@ -7,6 +7,7 @@ class SearchUserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var _textController = TextEditingController();
+    var _nameTextController = TextEditingController();
     return ViewModelBuilder<SearchUserViewmodel>.reactive(
       viewModelBuilder: () => SearchUserViewmodel(),
       builder: (context, model, _) {
@@ -52,7 +53,42 @@ class SearchUserPage extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     )
                     : model.user == null
-                      ? Container()
+                      ? model.notFound
+                          ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Opacity(opacity: 0.7, child: Text(_textController.text, style: Theme.of(context).textTheme.caption,)),
+                              SizedBox(height: 16.0),
+                              TextField(
+                                controller: _nameTextController,
+                                decoration: InputDecoration(
+                                  labelText: 'Enter name',
+                                  errorText: model.errorString
+                                ),
+                                textInputAction: TextInputAction.next,
+                                onSubmitted: model.invite,
+                              ),
+                              SizedBox(height: 16.0),
+                              GestureDetector(
+                                onTap: () => model.invite(_nameTextController.text),
+                                child: Container(
+                                  height: 8.0 * 4,
+                                  width: 8.0 * 20,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0 * 3),
+                                    gradient: LinearGradient(colors: [Colors.purple, Colors.blue], begin: Alignment.topRight, end: Alignment.centerLeft)
+                                  ),
+                                  child: Center(
+                                    child: Text('Invite', 
+                                      style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                          : Container()
                       : Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,

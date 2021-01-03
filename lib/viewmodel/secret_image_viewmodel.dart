@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:imageChat/logger.dart';
@@ -67,13 +68,23 @@ class SecretImageViewModel extends BaseViewModel {
 
   SecretImageViewModel({this.sendToChat});
 
-  decode() async {
+  Future<void> decode() async {
     setBusyForObject("decode", true);
     String path;
     if(_image is NetworkImage) {
-      var imageId = await ImageDownloader.downloadImage((_image as NetworkImage).url);
-      // Below is a method of obtaining saved image information.
-      path = await ImageDownloader.findPath(imageId);
+      try {
+        // var imageId = await ImageDownloader.downloadImage((_image as NetworkImage).url, destination: AndroidDestinationType.directoryDownloads);
+        // Below is a method of obtaining saved image information.
+        // path = await ImageDownloader.findPath(imageId);
+
+        final ByteData imageData = await NetworkAssetBundle(Uri.parse((_image as NetworkImage).url)).load("");
+        final tempFile = File(tempDir.path+"/downloadedImg");
+        await tempFile.writeAsBytes(imageData.buffer.asUint8List());
+        path = tempDir.path+"/downloadedImg";
+      } on PlatformException catch (error) {
+        print(error);
+        return;
+      }
     } else if(_image is FileImage) {
       path = (_image as FileImage).file.path;
     }
@@ -111,7 +122,7 @@ class SecretImageViewModel extends BaseViewModel {
     }
   }
 
-  encode() async {
+  Future<void> encode() async {
     setBusyForObject("encode", true);
     log.i('start encode');
     // await File(tempDir.path + '/img.webp').delete();

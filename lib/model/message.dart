@@ -69,14 +69,14 @@ class Message extends HiveObject {
     return ChatMessage(
       text: text, 
       user: (await locator<DB>().getUser(senderId)).toChatUser(),
-      image: img.isNotEmpty? img:null,
+      image: img.isNotEmpty? img : null,
       createdAt: time,
       id: id,
       // TODO: decode button
       buttons: attachment.isNotEmpty? [
-        OutlineButton(
+        ElevatedButton(
           // color
-          onPressed: () => locator<NavigationService>().navigateToView(SecretImageDecodeFullPage()),
+          onPressed: () => locator<NavigationService>().navigateToView(SecretImageDecodeFullPage(urlFromChat: img.isNotEmpty? img : null,)),
           child: Text('Decode Image'),
         )
       ] : []

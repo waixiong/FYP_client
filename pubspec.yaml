@@ -60,6 +60,12 @@ dependencies:
   cached_network_image: ^2.5.0
   flutter_string_encryption: ^0.3.1
 
+  # flutter_mailer: #^1.0.1
+  #   path: ./plugins/flutter_mailer-master
+  # flutter_email_sender: ^4.0.0
+  share: ^0.6.5+4
+  mailer: ^3.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

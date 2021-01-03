@@ -133,6 +133,7 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    log.i('Signing Out');
     await googleSignIn.signOut();
     _status = AuthStatus.Unauthenticated;
     locator<API>().setAuthorization(null, null);
@@ -148,7 +149,7 @@ class AuthService extends ChangeNotifier {
         return user;
       } catch(e) {
         print('--- API ERR ---');
-        _status = AuthStatus.Unauthenticated;
+        // _status = AuthStatus.Unauthenticated;
         notifyListeners();
         log.e(e);
         throw(checkServiceError(e));
@@ -168,7 +169,7 @@ class AuthService extends ChangeNotifier {
         return user;
       } catch(e) {
         print('--- API ERR ---');
-        _status = AuthStatus.Unauthenticated;
+        // _status = AuthStatus.Unauthenticated;
         notifyListeners();
         log.e(e);
         throw(checkServiceError(e));

@@ -132,7 +132,7 @@ class SecretImageEncodePage extends StatelessWidget {
                       //   // side: BorderSide()
                       // ),
                       clipBehavior: Clip.antiAlias,
-                      onPressed: model.encode,
+                      onPressed: model.busy("encode")? null : model.encode,
                       child: Text('Encode Image'),
                     )
                   ],
