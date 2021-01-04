@@ -26,7 +26,7 @@ class OpticalLabelScanPage extends StatelessWidget {
                     //   // side: BorderSide()
                     // ),
                     clipBehavior: Clip.antiAlias,
-                    onPressed: () {model.onImageButtonPressed(context);},
+                    onPressed: model.onCameraButtonPressed,
                     child: Row(
                       children: [
                         Icon(Icons.camera_alt_outlined),
@@ -44,7 +44,7 @@ class OpticalLabelScanPage extends StatelessWidget {
                     //   // side: BorderSide()
                     // ),
                     clipBehavior: Clip.antiAlias,
-                    onPressed: () {},
+                    onPressed: model.onGalleryButtonPressed,
                     child: Row(
                       children: [
                         Icon(Icons.photo_library_outlined),

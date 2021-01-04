@@ -35,8 +35,8 @@ class SecretImageViewModel extends BaseViewModel {
   final TextEditingController secretText = TextEditingController();
   // final TextEditingController decodedText = TextEditingController();
   // final String salt = "a=";
-  final String salt = "CXcVvxIMk6y0cPbTsF9a5IB15Pw04psEoAEJQ9EcZBJWaqYA29ZubQZPSOn8+xN9yJq7xWIUPwrOHFHuK5gUn6uF66kPy120SXxESFMuMCBLMWtTGyy743Ge5C/PQ5LPRs4qAOe0Ea/nPShkF0mA0nXT7Rt76/6VOm6qENNuUwE=";
-  
+  final String salt = "SW1hZ2VDaGF0MTIz";
+
   Format format = Format.SiaPattern;
   bool custom = false;
   FixedColor fixedColor = FixedColor.Green;
@@ -106,11 +106,16 @@ class SecretImageViewModel extends BaseViewModel {
         log.i('Using SiaPattern');
         String out = await SiaPattern.decodeImage(path, tempDir.path+'/output');
         log.i('Done SiaPattern $out');
-        if(secretText.text.length != 0){
-          await _decrypt(out);
-          // _outputString = await _decrypt(out);
-        } else {
-          _outputString = out;
+        if(out == "error in decoding"){
+          decodeErr = out;
+        }
+        else{
+          if(secretText.text.length != 0){
+            await _decrypt(out);
+            // _outputString = await _decrypt(out);
+          } else {
+            _outputString = out;
+          }
         }
       }
       // _outputImg = FileImage(File(tempDir.path + '/img.webp'));

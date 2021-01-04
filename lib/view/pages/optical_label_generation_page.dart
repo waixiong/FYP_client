@@ -28,6 +28,7 @@ class OpticalLabelGenerationPage extends StatelessWidget {
                         decoration: InputDecoration(
                           labelText: 'Input Text',
                         ),
+                        controller: model.inputText,
                       )
                     ],
                   ),
@@ -42,7 +43,7 @@ class OpticalLabelGenerationPage extends StatelessWidget {
                       //   // side: BorderSide()
                       // ),
                       clipBehavior: Clip.antiAlias,
-                      onPressed: () {}, 
+                      onPressed: model.clear,
                       child: Text('Clear')
                     ),
                     SizedBox(width: 3,),
@@ -52,7 +53,7 @@ class OpticalLabelGenerationPage extends StatelessWidget {
                       //   // side: BorderSide()
                       // ),
                       clipBehavior: Clip.antiAlias,
-                      onPressed: () {},
+                      onPressed: model.encode,
                       child: Text('Generate'),
                     )
                   ],
