@@ -11,66 +11,105 @@ class OpticalLabelScanPage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(9),
       child: ViewModelBuilder<OpticalLabelViewModel>.reactive(
-        viewModelBuilder: () => OpticalLabelViewModel(),
-        builder: (context, model, _) {
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    // shape: RoundedRectangleBorder(
-                    //   borderRadius: BorderRadius.circular(18.0),
-                    //   // side: BorderSide()
-                    // ),
-                    clipBehavior: Clip.antiAlias,
-                    onPressed: model.onCameraButtonPressed,
-                    child: Row(
-                      children: [
-                        Icon(Icons.camera_alt_outlined),
-                        SizedBox(width: 6),
-                        Text('Scan through Camera')
-                      ],
+          viewModelBuilder: () => OpticalLabelViewModel(),
+          builder: (context, model, _) {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(18.0),
+                      //   // side: BorderSide()
+                      // ),
+                      clipBehavior: Clip.antiAlias,
+                      onPressed: model.onCameraButtonPressed,
+                      child: Row(
+                        children: [
+                          Icon(Icons.camera_alt_outlined),
+                          SizedBox(width: 6),
+                          Text('Scan through Camera')
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    // shape: RoundedRectangleBorder(
-                    //   borderRadius: BorderRadius.circular(18.0),
-                    //   // side: BorderSide()
-                    // ),
-                    clipBehavior: Clip.antiAlias,
-                    onPressed: model.onGalleryButtonPressed,
-                    child: Row(
-                      children: [
-                        Icon(Icons.photo_library_outlined),
-                        SizedBox(width: 6),
-                        Text('Photo from Gallery')
-                      ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(18.0),
+                      //   // side: BorderSide()
+                      // ),
+                      clipBehavior: Clip.antiAlias,
+                      onPressed: model.onGalleryButtonPressed,
+                      child: Row(
+                        children: [
+                          Icon(Icons.photo_library_outlined),
+                          SizedBox(width: 6),
+                          Text('Photo from Gallery')
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 9,),
-                // Text('Decoded Output'),
-                // Container(
-                //   height: 100, width: double.infinity,
-                //   padding: EdgeInsets.all(3),
-                //   decoration: BoxDecoration(
-                //     border: Border.all()
-                //   ),
-                //   child: SingleChildScrollView(
-                //     child: SelectableText('Output will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)'),
-                //   ),
-                // )
-              ],
-            ),
-          );
-        }
-      ),
+                  SizedBox(
+                    height: 9,
+                  ),
+                  if (model.busy("decode"))
+                    Center(
+                      child: SizedBox(
+                        height: 36,
+                        width: 36,
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else if (model.outputString != null)
+                    Column(mainAxisSize: MainAxisSize.min, children: [
+                      Text('Decoded Output'),
+                      Container(
+                        height: 100,
+                        width: double.infinity,
+                        padding: EdgeInsets.all(9),
+                        decoration: BoxDecoration(
+                          // border: Border.all(),
+                          // shape: BoxShape.circle,
+                          borderRadius: BorderRadius.circular(9),
+                          color:
+                              Theme.of(context).inputDecorationTheme.fillColor,
+                        ),
+                        child: SingleChildScrollView(
+                          child: SelectableText(model.outputString),
+                        ),
+                      )
+                    ])
+                  else if (model.decodeErr != null)
+                    Padding(
+                      padding: EdgeInsets.all(9),
+                      child: Text(
+                        model.decodeErr,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  SizedBox(
+                    height: 120,
+                  )
+                  // Text('Decoded Output'),
+                  // Container(
+                  //   height: 100, width: double.infinity,
+                  //   padding: EdgeInsets.all(3),
+                  //   decoration: BoxDecoration(
+                  //     border: Border.all()
+                  //   ),
+                  //   child: SingleChildScrollView(
+                  //     child: SelectableText('Output will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)\nOutput will be here, in text (if it is text)'),
+                  //   ),
+                  // )
+                ],
+              ),
+            );
+          }),
     );
   }
 }

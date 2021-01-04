@@ -20,6 +20,8 @@ class OpticalLabelViewModel extends BaseViewModel {
   FileImage get outputImg => _outputImg;
   String get outputString => _outputString;
 
+  String decodeErr;
+
   OpticalLabelViewModel();
 
   //camera
@@ -61,19 +63,17 @@ class OpticalLabelViewModel extends BaseViewModel {
 
   decode() async {
     String path;
-//    if(_image is NetworkImage) {
-//      var imageId = await ImageDownloader.downloadImage((_image as NetworkImage).url);
-//      // Below is a method of obtaining saved image information.
-//      path = await ImageDownloader.findPath(imageId);
-//    } else if(_image is FileImage) {
-//      path = (_image as FileImage).file.path;
-//    }
     try {
       if(_imageFile != null){
-        String tempPath = (await getTemporaryDirectory()).path;
         log.i("Enter decoding:");
         log.i(_imageFile.path);
-        String decodedText = siaPattern.decodeImage(_imageFile.path);
+        String decodedText = await siaPattern.decodeImage(_imageFile.path, tempDir.path+'/output');
+        if(decodedText == "error in decoding"){
+          decodeErr = decodedText;
+        }
+        else{
+          _outputString = decodedText;
+        }
         log.i("decode text: ");
         log.i(decodedText);
       }
@@ -82,6 +82,7 @@ class OpticalLabelViewModel extends BaseViewModel {
     } catch(e) {
       log.e("decoding err");
       log.e(e);
+      decodeErr = "decoding err";
       setBusyForObject("decode", false);
     }
   }
@@ -92,17 +93,8 @@ class OpticalLabelViewModel extends BaseViewModel {
     // await File(tempDir.path + '/img.webp').delete();
     // print(appDocDir.path);
     try {
-//      if(format == Format.Cheelaunator) {
-//        DelaunatorPattern.encodeDelaunatorPattern(inputText.text, tempDir.path + '/img.webp');
-//        _outputImg = FileImage(File(tempDir.path + '/img.webp'));
-//      } else {
-//        String encryptedData = inputText.text;
-//        if(secretText.text.length != 0){
-//          encryptedData = await encrypt();
-//        }
         siaPattern.generateImage(inputText.text, tempDir.path + '/img.jpg', "Code");
         _outputImg = FileImage(File(tempDir.path + '/img.jpg'));
-//      }
       setBusyForObject("encode", false);
       log.i('done encode');
     } catch(e) {
