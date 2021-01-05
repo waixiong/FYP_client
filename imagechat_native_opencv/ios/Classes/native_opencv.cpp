@@ -36,6 +36,7 @@ map<string, Scalar> colours = {
 };
 
 Scalar formatColour(Scalar colour) {
+	platform_log("Blue: %d Green: %d Red: %d Before format\n", colour[0], colour[1], colour[2]);
 	double blue = round(colour[0] / 128) * 128;
 	if (blue > 255) {
 		blue -= 1;
@@ -48,6 +49,7 @@ Scalar formatColour(Scalar colour) {
 	if (red > 255) {
 		red -= 1;
 	}
+	platform_log("Blue: %d Green: %d Red: %d after format\n", blue, green, red);
 	return Scalar(blue, green, red);
 }
 
@@ -57,7 +59,6 @@ Scalar encode(string data) {
 
 string decode(Scalar colour) {
 	colour = formatColour(colour);
-	cout << colour << endl;
 	for (std::map<std::string, cv::Scalar>::iterator itr = colours.begin(); itr != colours.end(); ++itr) {
 		if (itr->second == colour) {
 			return itr->first;
@@ -93,7 +94,6 @@ string strToBinary(string s)
 			}
 		}
 		binData += bin;
-		cout << s[i] << " " << bin << endl;
 	}
 	return binData;
 }
@@ -241,8 +241,8 @@ int lengthSquare(Point first, Point second)
 string _decodeImage(string filePath) {
     Mat imageGray, threshOutput;
 	Mat image = imread(filePath);
-	if (image.cols > 1800 || image.rows > 1500) {
-		double maxValue = max(image.cols/1000, image.rows/700);
+    if (image.cols > 1500 || image.rows > 1400) {
+		double maxValue = max(image.cols/1500, image.rows/1400);
 		resize(image, image, Size(image.cols / maxValue, image.rows / maxValue));
 	}
 	// sharpen image using "unsharp mask" algorithm
@@ -252,21 +252,32 @@ string _decodeImage(string filePath) {
 	Mat sharpened = image * (1 + amount) + blurred * (-amount);
 	image.copyTo(sharpened, lowContrastMask);
 	cvtColor(sharpened, imageGray, COLOR_BGR2GRAY);
-	threshold(imageGray, threshOutput, 150, 150, 0);
+	threshold(imageGray, threshOutput, 160, 160, 0);
 	vector<vector<Point>> contours;
 	findContours(threshOutput, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
-	contours.erase(contours.begin());
-	vector<Point> upperLeftContour = contours[0];
-	Rect minBoundRect = boundingRect(contours[0]);
+    vector<Point> upperLeftContour;
+	Rect minBoundRect;
+	vector<Point> approx;
+	bool small = false;
 	for (int i = 0; i < contours.size();) {
-		Rect currentBoundRect = boundingRect(contours[i]);
-		if (contourArea(contours[i]) < 10 ) {
+		// Approximate contour with accuracy proportional
+		// to the contour perimeter
+		approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.04, true);
+		if (contourArea(contours[i]) < 10 || approx.size() != 3) {
 			contours.erase(contours.begin() + i);
 		}
 		else {
-			if (currentBoundRect.x < minBoundRect.x && currentBoundRect.y < minBoundRect.y) {
-				upperLeftContour = contours[i];
+			Rect currentBoundRect = boundingRect(contours[i]);
+			if (small == false) {
 				minBoundRect = currentBoundRect;
+				upperLeftContour = contours[i];
+				small = true;
+			}
+			else if (currentBoundRect.y - minBoundRect.y <= (minBoundRect.height/6)) {
+				if (currentBoundRect.x - minBoundRect.x <= (minBoundRect.width / 6)) {
+					upperLeftContour = contours[i];
+					minBoundRect = currentBoundRect;
+				}
 			}
 			i++;
 		}
@@ -279,67 +290,170 @@ string _decodeImage(string filePath) {
 	double rotatedAngle = 0;
 
 	if (line1 > line2 && line1 > line3) {//line1 is the longest side
-		if (triangle[0].y < triangle[1].y) {//find lowest point, and use it to calculate angle
-			Point newPoint = Point(triangle[0].x - sqrt(line1), triangle[0].y);
+		if (triangle[0].x < triangle[1].x) {//find the point near to 0 in x-axis, and use it to calculate angle
 			double angle1 = atan2(triangle[1].y - triangle[0].y, triangle[1].x - triangle[0].x);
-			double angle2 = atan2(triangle[0].y - newPoint.y, triangle[0].x - newPoint.x);
-			rotatedAngle = (angle2 - angle1) * 180 / 3.14;
-			if (rotatedAngle < 0) {
-				rotatedAngle += 360;//the angle as compared to the inverted triangle
+			rotatedAngle = angle1 * 180 / 3.14;
+			if (triangle[2].x <= triangle[1].x && triangle[2].x >= triangle[0].x) {// if in between, then triangle direction will be either up or down
+				if (triangle[2].y >= triangle[1].y && triangle[2].y >= triangle[0].y) {//the triangle single point is at bottom, so it is correct orientation
+
+				}
+				else {//the triangle single point is at top, so need to rotate 180 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+			}
+			else {
+				if (triangle[2].x <= triangle[1].x && triangle[2].x <= triangle[0].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+				else {//the triangle single point is at right side, so need to rotate 90 degree
+
+				}
 			}
 		}
 		else {
-			Point newPoint = Point(triangle[1].x - sqrt(line1), triangle[1].y);
 			double angle1 = atan2(triangle[0].y - triangle[1].y, triangle[0].x - triangle[1].x);
-			double angle2 = atan2(triangle[1].y - newPoint.y, triangle[1].x - newPoint.x);
-			rotatedAngle = (angle1 - angle2) * 180 / 3.14;
-			if (rotatedAngle < 0) {
-				rotatedAngle += 360;
+			rotatedAngle = angle1 * 180 / 3.14;
+			if (triangle[2].x <= triangle[0].x && triangle[2].x >= triangle[1].x) {// if in between, then triangle direction will be either up or down
+				if (triangle[2].y >= triangle[1].y && triangle[2].y >= triangle[0].y) {//the triangle single point is at bottom, so it is correct orientation
+
+				}
+				else {//the triangle single point is at top, so need to rotate 180 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+			}
+			else {
+				if (triangle[2].x <= triangle[1].x && triangle[2].x <= triangle[0].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+				else {//the triangle single point is at right side, so need to rotate 90 degree
+
+				}
 			}
 		}
 	}
 	else if (line2 > line1 && line2 > line3) {//line2 is the longest side
-		if (triangle[1].y < triangle[2].y) {//find lowest point, and use it to calculate angle
-			Point newPoint = Point(triangle[1].x - sqrt(line1), triangle[1].y);
+		if (triangle[1].x < triangle[2].x) {//find the point near to 0 in x-axis, and use it to calculate angle
 			double angle1 = atan2(triangle[2].y - triangle[1].y, triangle[2].x - triangle[1].x);
-			double angle2 = atan2(triangle[1].y - newPoint.y, triangle[1].x - newPoint.x);
-			rotatedAngle = (angle2 - angle1) * 180 / 3.14;
-			if (rotatedAngle < 0) {
-				rotatedAngle += 360;
+			rotatedAngle = angle1 * 180 / 3.14;
+			if (triangle[0].x >= triangle[1].x && triangle[0].x <= triangle[2].x) {// if in between, then triangle direction will be either up or down
+				if (triangle[0].y >= triangle[1].y && triangle[0].y >= triangle[2].y) {//the triangle single point is at bottom, so it is correct orientation
+
+				}
+				else {//the triangle single point is at top, so need to rotate 180 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+			}
+			else {
+				if (triangle[0].x <= triangle[1].x && triangle[0].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+				else {//the triangle single point is at right side, so need to rotate 90 degree
+
+				}
 			}
 		}
 		else {
-			Point newPoint = Point(triangle[2].x - sqrt(line1), triangle[2].y);
 			double angle1 = atan2(triangle[1].y - triangle[2].y, triangle[1].x - triangle[2].x);
-			double angle2 = atan2(triangle[2].y - newPoint.y, triangle[2].x - newPoint.x);
-			rotatedAngle = (angle1 - angle2) * 180 / 3.14;
-			if (rotatedAngle < 0) {
-				rotatedAngle += 360;
+			rotatedAngle = angle1 * 180 / 3.14;
+			if (triangle[0].x >= triangle[2].x && triangle[0].x <= triangle[1].x) {// if in between, then triangle direction will be either up or down
+				if (triangle[0].y >= triangle[1].y && triangle[0].y >= triangle[2].y) {//the triangle single point is at bottom, so it is correct orientation
+
+				}
+				else {//the triangle single point is at top, so need to rotate 180 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+			}
+			else {
+				if (triangle[0].x <= triangle[1].x && triangle[0].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+				else {//the triangle single point is at right side, so need to rotate 90 degree
+
+				}
 			}
 		}
 	}
 	else {//line3 is the longest side
-		if (triangle[2].y < triangle[0].y) {//find lowest point, and use it to calculate angle
-			Point newPoint = Point(triangle[2].x - sqrt(line1), triangle[2].y);
+		if (triangle[2].x < triangle[0].x) {//find the point near to 0 in x-axis, and use it to calculate angle
 			double angle1 = atan2(triangle[0].y - triangle[2].y, triangle[0].x - triangle[2].x);
-			double angle2 = atan2(triangle[2].y - newPoint.y, triangle[2].x - newPoint.x);
-			rotatedAngle = (angle2 - angle1) * 180 / 3.14;
-			if (rotatedAngle < 0) {
-				rotatedAngle += 360;
+			rotatedAngle = angle1 * 180 / 3.14;
+			if (triangle[1].x >= triangle[2].x && triangle[1].x <= triangle[0].x) {// if in between, then triangle direction will be either up or down
+				if (triangle[1].y >= triangle[0].y && triangle[1].y >= triangle[2].y) {//the triangle single point is at bottom, so it is correct orientation
+
+				}
+				else {//the triangle single point is at top, so need to rotate 180 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+			}
+			else {
+				if (triangle[1].x <= triangle[0].x && triangle[1].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 degree
+
+				}
+				else {//the triangle single point is at right side, so need to rotate -90 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
 			}
 		}
 		else {
-			Point newPoint = Point(triangle[0].x - sqrt(line1), triangle[0].y);
 			double angle1 = atan2(triangle[2].y - triangle[0].y, triangle[2].x - triangle[0].x);
-			double angle2 = atan2(triangle[0].y - newPoint.y, triangle[0].x - newPoint.x);
-			rotatedAngle = (angle1 - angle2) * 180 / 3.14;
-			if (rotatedAngle < 0) {
-				rotatedAngle += 360;
+			rotatedAngle = angle1 * 180 / 3.14;
+			if (triangle[1].x >= triangle[0].x && triangle[1].x <= triangle[2].x) {// if in between, then triangle direction will be either up or down
+				if (triangle[1].y >= triangle[0].y && triangle[1].y >= triangle[2].y) {//the triangle single point is at bottom, so it is correct orientation
+
+				}
+				else {//the triangle single point is at top, so need to rotate 180 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
+			}
+			else {
+				if (triangle[1].x <= triangle[0].x && triangle[1].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 degree
+
+				}
+				else {//the triangle single point is at right side, so need to rotate -90 degree
+					rotatedAngle += 180;
+					if (rotatedAngle > 360) {
+						rotatedAngle -= 360;
+					}
+				}
 			}
 		}
 	}
 	double angleToRotate = rotatedAngle;
-	if (angleToRotate >= 30 && angleToRotate <= 330) {
+	if ((angleToRotate >= 30 && angleToRotate <= 330) || angleToRotate <= -30) {
+	    platform_log("rotate angle: %f\n", angleToRotate);
 		// get rotation matrix for rotating the image around its center in pixel coordinates
 		Point2f center((image.cols - 1) / 2.0, (image.rows - 1) / 2.0);
 		Mat rot = getRotationMatrix2D(center, angleToRotate, 1.0);
@@ -352,8 +466,9 @@ string _decodeImage(string filePath) {
 		Mat dst;
 		warpAffine(image, dst, rot, bbox.size());
 		dst.copyTo(image);
-		if (image.cols > 1800 || image.rows > 1500) {
-			resize(image, image, Size(image.cols / 5, image.rows / 5));
+        if (image.cols > 1500 || image.rows > 1400) {
+			double maxValue = max(image.cols / 1500, image.rows / 1400);
+			resize(image, image, Size(image.cols / maxValue, image.rows / maxValue));
 		}
 
 		// sharpen image using "unsharp mask" algorithm
@@ -362,12 +477,14 @@ string _decodeImage(string filePath) {
 		sharpened = image * (1 + amount) + blurred * (-amount);
 		image.copyTo(sharpened, lowContrastMask);
 		cvtColor(sharpened, imageGray, COLOR_BGR2GRAY);
-		threshold(imageGray, threshOutput, 150, 150, 0);
+		threshold(imageGray, threshOutput, 160, 160, 0);
 		findContours(threshOutput, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
-		contours.erase(contours.begin());
 		//erase any very small contour
 		for (int i = 0; i < contours.size();) {
-			if (contourArea(contours[i]) < 10) {
+			// Approximate contour with accuracy proportional
+			// to the contour perimeter
+			approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.04, true);
+			if (contourArea(contours[i]) < 10 || approx.size() != 3) {
 				contours.erase(contours.begin() + i);
 			}
 			else {
@@ -387,19 +504,23 @@ string _decodeImage(string filePath) {
 		Scalar meanValue = mean(image, mask);
 		Rect contour = boundingRect(contours[i]);
 		string currentData = decode(meanValue);
+		//string filename = "triangle" + to_string(i) + ".jpg";
+		//imwrite("/storage/emulated/0/Android/data/com.getitqec.imagechat/files/" + filename, mask);
 		if (currentData == "error finding match") {
 			return "error in decoding";
 		}
 		data += currentData;
 	}
+	//platform_log("Data: %s\n", data.c_str());
 	string secretMessage = "";
 	for (int i = 0; i < data.length()/7; i++) {
 		string cur = data.substr(i * 7, 7);
-		cout << cur << endl;
+		//platform_log("cur binary: %s", cur.c_str());
 		if (cur == EOFBinary) {
 			break;
 		}
 		cur = binaryToStr(cur);
+		//platform_log("cur char: %s", cur.c_str());
 		secretMessage += cur;
 	}
 	return secretMessage;
