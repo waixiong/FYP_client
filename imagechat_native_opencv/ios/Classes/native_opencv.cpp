@@ -27,12 +27,12 @@ map<string, Scalar> colours = {
 	{"0111", Scalar(128, 0, 255)},
 	{"1000", Scalar(128, 128, 0)},
 	{"1001", Scalar(128, 128, 128)},
-	{"1010", Scalar(128, 128, 255)},
-	{"1011", Scalar(255, 128, 128)},
-	{"1100", Scalar(255, 0, 0)},
-	{"1101", Scalar(255, 0, 128)},
-	{"1110", Scalar(255, 0, 255)},
-	{"1111", Scalar(255, 128, 0)}
+	{"1010", Scalar(128, 255, 0)},
+	{"1011", Scalar(255, 0, 0)},
+	{"1100", Scalar(255, 0, 128)},
+	{"1101", Scalar(255, 0, 255)},
+	{"1110", Scalar(255, 128, 0)},
+	{"1111", Scalar(255, 128, 128)}
 };
 
 Scalar formatColour(Scalar colour) {
@@ -151,7 +151,7 @@ Mat encodeImage(string encryptedData, string type) {
 	}
 	else {
 		int min = int(ceil(sqrt(dataLength / 4.0 / 2.0)));
-		numOfRow = rand() % int(ceil(sqrt(dataLength / 4.0))) + min;
+		numOfRow = rand() % int(ceil(sqrt(dataLength / 4.0 / 2.0))) + min;
 		if (numOfRow < 1) {
 			numOfRow = 1;
 		}
@@ -220,7 +220,7 @@ Mat encodeImage(string encryptedData, string type) {
 bool smallerContour(vector<Point> contour, vector<Point> contour1) {//for sorting the contours
 	Rect boundRect = boundingRect(contour);
 	Rect boundRect1 = boundingRect(contour1);
-	if(abs(boundRect.y - boundRect1.y) <= 5){//have to check if the triangle x and y only have small difference, then consider they are equal
+	if(abs(boundRect.y - boundRect1.y) <= (boundRect.height/4)){//have to check if the triangle x and y only have small difference, then consider they are equal
 	    return boundRect.x < boundRect1.x;
 	}
 	else if (boundRect.y < boundRect1.y) {
@@ -252,10 +252,10 @@ string _decodeImage(string filePath) {
 	Mat sharpened = image * (1 + amount) + blurred * (-amount);
 	image.copyTo(sharpened, lowContrastMask);
 	cvtColor(sharpened, imageGray, COLOR_BGR2GRAY);
-	threshold(imageGray, threshOutput, 160, 160, 0);
+	threshold(imageGray, threshOutput, 170, 170, 0);
 	vector<vector<Point>> contours;
 	findContours(threshOutput, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
-    vector<Point> upperLeftContour;
+    vector<Point> leftContour;
 	Rect minBoundRect;
 	vector<Point> approx;
 	bool small = false;
@@ -270,20 +270,18 @@ string _decodeImage(string filePath) {
 			Rect currentBoundRect = boundingRect(contours[i]);
 			if (small == false) {
 				minBoundRect = currentBoundRect;
-				upperLeftContour = contours[i];
+				leftContour = contours[i];
 				small = true;
 			}
-			else if (currentBoundRect.y - minBoundRect.y <= (minBoundRect.height/6)) {
-				if (currentBoundRect.x - minBoundRect.x <= (minBoundRect.width / 6)) {
-					upperLeftContour = contours[i];
-					minBoundRect = currentBoundRect;
-				}
+            else if (currentBoundRect.x <= minBoundRect.x) {
+				leftContour = contours[i];
+				minBoundRect = currentBoundRect;
 			}
 			i++;
 		}
 	}
 	vector<Point> triangle;
-	minEnclosingTriangle(upperLeftContour, triangle);
+	minEnclosingTriangle(leftContour, triangle);
 	int line1 = lengthSquare(triangle[0], triangle[1]);
 	int line2 = lengthSquare(triangle[1], triangle[2]);
 	int line3 = lengthSquare(triangle[2], triangle[0]);
@@ -305,14 +303,21 @@ string _decodeImage(string filePath) {
 				}
 			}
 			else {
-				if (triangle[2].x <= triangle[1].x && triangle[2].x <= triangle[0].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
-					rotatedAngle += 180;
-					if (rotatedAngle > 360) {
-						rotatedAngle -= 360;
+				if (triangle[2].x <= triangle[1].x && triangle[2].x <= triangle[0].x) {//the triangle single point is at left side, so should rotate 90 or -270 degree
+					if (rotatedAngle < 0) {
+						rotatedAngle -= 180;
+						if (rotatedAngle < -360) {
+							rotatedAngle += 360;
+						}
 					}
 				}
-				else {//the triangle single point is at right side, so need to rotate 90 degree
-
+				else {//the triangle single point is at right side, so need to rotate -90 or 270 degree anticlockwise
+					if (rotatedAngle >= 0) {
+						rotatedAngle += 180;
+						if (rotatedAngle > 360) {
+							rotatedAngle -= 360;
+						}
+					}
 				}
 			}
 		}
@@ -331,14 +336,21 @@ string _decodeImage(string filePath) {
 				}
 			}
 			else {
-				if (triangle[2].x <= triangle[1].x && triangle[2].x <= triangle[0].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
-					rotatedAngle += 180;
-					if (rotatedAngle > 360) {
-						rotatedAngle -= 360;
+				if (triangle[2].x <= triangle[1].x && triangle[2].x <= triangle[0].x) {//the triangle single point is at left side, so should rotate 90 or -270 degree
+					if (rotatedAngle < 0) {
+						rotatedAngle -= 180;
+						if (rotatedAngle < -360) {
+							rotatedAngle += 360;
+						}
 					}
 				}
-				else {//the triangle single point is at right side, so need to rotate 90 degree
-
+				else {//the triangle single point is at right side, so need to rotate -90 or 270 degree anticlockwise
+					if (rotatedAngle >= 0) {
+						rotatedAngle += 180;
+						if (rotatedAngle > 360) {
+							rotatedAngle -= 360;
+						}
+					}
 				}
 			}
 		}
@@ -359,14 +371,21 @@ string _decodeImage(string filePath) {
 				}
 			}
 			else {
-				if (triangle[0].x <= triangle[1].x && triangle[0].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
-					rotatedAngle += 180;
-					if (rotatedAngle > 360) {
-						rotatedAngle -= 360;
+				if (triangle[0].x <= triangle[1].x && triangle[0].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 or -270 degree
+					if (rotatedAngle < 0) {
+						rotatedAngle -= 180;
+						if (rotatedAngle < -360) {
+							rotatedAngle += 360;
+						}
 					}
 				}
-				else {//the triangle single point is at right side, so need to rotate 90 degree
-
+				else {//the triangle single point is at right side, so need to rotate -90 or 270 degree anticlockwise
+					if (rotatedAngle >= 0) {
+						rotatedAngle += 180;
+						if (rotatedAngle > 360) {
+							rotatedAngle -= 360;
+						}
+					}
 				}
 			}
 		}
@@ -385,14 +404,21 @@ string _decodeImage(string filePath) {
 				}
 			}
 			else {
-				if (triangle[0].x <= triangle[1].x && triangle[0].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate -90 or 270 degree
-					rotatedAngle += 180;
-					if (rotatedAngle > 360) {
-						rotatedAngle -= 360;
+				if (triangle[0].x <= triangle[1].x && triangle[0].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 or -270 degree
+					if (rotatedAngle < 0) {
+						rotatedAngle -= 180;
+						if (rotatedAngle < -360) {
+							rotatedAngle += 360;
+						}
 					}
 				}
-				else {//the triangle single point is at right side, so need to rotate 90 degree
-
+				else {//the triangle single point is at right side, so need to rotate -90 or 270 degree anticlockwise
+					if (rotatedAngle >= 0) {
+						rotatedAngle += 180;
+						if (rotatedAngle > 360) {
+							rotatedAngle -= 360;
+						}
+					}
 				}
 			}
 		}
@@ -413,13 +439,20 @@ string _decodeImage(string filePath) {
 				}
 			}
 			else {
-				if (triangle[1].x <= triangle[0].x && triangle[1].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 degree
-
+				if (triangle[1].x <= triangle[0].x && triangle[1].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 or -270 degree
+					if (rotatedAngle < 0) {
+						rotatedAngle -= 180;
+						if (rotatedAngle < -360) {
+							rotatedAngle += 360;
+						}
+					}
 				}
-				else {//the triangle single point is at right side, so need to rotate -90 degree
-					rotatedAngle += 180;
-					if (rotatedAngle > 360) {
-						rotatedAngle -= 360;
+				else {//the triangle single point is at right side, so need to rotate -90 or 270 degree anticlockwise
+					if (rotatedAngle >= 0) {
+						rotatedAngle += 180;
+						if (rotatedAngle > 360) {
+							rotatedAngle -= 360;
+						}
 					}
 				}
 			}
@@ -439,13 +472,20 @@ string _decodeImage(string filePath) {
 				}
 			}
 			else {
-				if (triangle[1].x <= triangle[0].x && triangle[1].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 degree
-
+				if (triangle[1].x <= triangle[0].x && triangle[1].x <= triangle[2].x) {//the triangle single point is at left side, so should rotate 90 or -270 degree
+					if (rotatedAngle < 0) {
+						rotatedAngle -= 180;
+						if (rotatedAngle < -360) {
+							rotatedAngle += 360;
+						}
+					}
 				}
-				else {//the triangle single point is at right side, so need to rotate -90 degree
-					rotatedAngle += 180;
-					if (rotatedAngle > 360) {
-						rotatedAngle -= 360;
+				else {//the triangle single point is at right side, so need to rotate -90 or 270 degree anticlockwise
+					if (rotatedAngle >= 0) {
+						rotatedAngle += 180;
+						if (rotatedAngle > 360) {
+							rotatedAngle -= 360;
+						}
 					}
 				}
 			}
@@ -463,21 +503,12 @@ string _decodeImage(string filePath) {
 		rot.at<double>(0, 2) += bbox.width / 2.0 - image.cols / 2.0;
 		rot.at<double>(1, 2) += bbox.height / 2.0 - image.rows / 2.0;
 
-		Mat dst;
-		warpAffine(image, dst, rot, bbox.size());
+		Mat dst, threshDst;//only rotate the thresh output and image so no need to redo image processing steps
+        warpAffine(image, dst, rot, bbox.size());
+        warpAffine(threshOutput, threshDst, rot, bbox.size());
 		dst.copyTo(image);
-        if (image.cols > 1500 || image.rows > 1400) {
-			double maxValue = max(image.cols / 1500, image.rows / 1400);
-			resize(image, image, Size(image.cols / maxValue, image.rows / maxValue));
-		}
+		threshDst.copyTo(threshOutput);
 
-		// sharpen image using "unsharp mask" algorithm
-		GaussianBlur(image, blurred, Size(), sigma, sigma);
-		lowContrastMask = abs(image - blurred) < thresh;
-		sharpened = image * (1 + amount) + blurred * (-amount);
-		image.copyTo(sharpened, lowContrastMask);
-		cvtColor(sharpened, imageGray, COLOR_BGR2GRAY);
-		threshold(imageGray, threshOutput, 160, 160, 0);
 		findContours(threshOutput, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
 		//erase any very small contour
 		for (int i = 0; i < contours.size();) {

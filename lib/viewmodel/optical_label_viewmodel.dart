@@ -62,7 +62,7 @@ class OpticalLabelViewModel extends BaseViewModel {
   }
 
   decode() async {
-    String path;
+    setBusyForObject("decode", true);
     try {
       if(_imageFile != null){
         log.i("Enter decoding:");
@@ -93,8 +93,8 @@ class OpticalLabelViewModel extends BaseViewModel {
     // await File(tempDir.path + '/img.webp').delete();
     // print(appDocDir.path);
     try {
-        siaPattern.generateImage(inputText.text, tempDir.path + '/img.jpg', "Code");
-        _outputImg = FileImage(File(tempDir.path + '/img.jpg'));
+        siaPattern.generateImage(inputText.text, tempDir.path + '/label.webp', "Code");
+        _outputImg = FileImage(File(tempDir.path + '/label.webp'));
       setBusyForObject("encode", false);
       log.i('done encode');
     } catch(e) {
