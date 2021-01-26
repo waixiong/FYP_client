@@ -1,0 +1,925 @@
+@startuml imagechat
+set namespaceSeparator ::
+
+class "imageChat::service::notification::push_notification.dart::PushNotificationsManager" {
+  +Logger log
+  +Future init()
+}
+
+"imageChat::service::notification::push_notification.dart::PushNotificationsManager" o-- "logger::src::logger.dart::Logger"
+
+class "imageChat::service::notification::messaging_token.dart::MessagingTokenService" {
+  +Logger log
+  +String service
+  +bool promotion
+  +bool orderStatus
+  +Future sendToken()
+  +Future sendInvitation()
+}
+
+"imageChat::service::notification::messaging_token.dart::MessagingTokenService" o-- "logger::src::logger.dart::Logger"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "imageChat::service::notification::messaging_token.dart::MessagingTokenService"
+
+class "imageChat::service::db.dart::DB" {
+  +Logger log
+  +bool loaded
+  +Map<dynamic, Message> lastMessage
+  +dynamic init()
+  +Future getUser()
+  +Future searchUser()
+  +Future addUser()
+  +List getMessagesListByUser()
+  +dynamic addMessage()
+  +Future loadMessages()
+  +dynamic getMessageBox()
+  +dynamic getUserBox()
+  +dynamic getUserMessagesBox()
+}
+
+"imageChat::service::db.dart::DB" o-- "logger::src::logger.dart::Logger"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "imageChat::service::db.dart::DB"
+
+class "imageChat::service::grpc::chat.pbgrpc.dart::ChatServiceClient" {
+  +ResponseFuture sendMessage()
+  +ResponseFuture updateMessage()
+  +ResponseFuture deleteMessage()
+  +ResponseStream connect()
+}
+
+"grpc::src::client::client.dart::Client" <|-- "imageChat::service::grpc::chat.pbgrpc.dart::ChatServiceClient"
+
+abstract class "imageChat::service::grpc::chat.pbgrpc.dart::ChatServiceBase" {
+  +String $name
+  +Future sendMessage_Pre()
+  +Future updateMessage_Pre()
+  +Future deleteMessage_Pre()
+  +Future sendMessage()
+  +Future updateMessage()
+  +Future deleteMessage()
+  +Stream connect()
+}
+
+"grpc::src::server::service.dart::Service" <|-- "imageChat::service::grpc::chat.pbgrpc.dart::ChatServiceBase"
+
+class "imageChat::service::grpc::google::protobuf::empty.pb.dart::Empty" {
+  +BuilderInfo info_
+  +Empty clone()
+  +Empty copyWith()
+  {static} +Empty create()
+  +Empty createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +Empty getDefault()
+}
+
+"imageChat::service::grpc::google::protobuf::empty.pb.dart::Empty" o-- "protobuf::protobuf.dart::BuilderInfo"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::google::protobuf::empty.pb.dart::Empty"
+
+class "imageChat::service::grpc::chat.pb.dart::GetChat" {
+  +BuilderInfo info_
+  +String userId
+  +GetChat clone()
+  +GetChat copyWith()
+  {static} +GetChat create()
+  +GetChat createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +GetChat getDefault()
+  +bool hasUserId()
+  +void clearUserId()
+}
+
+"imageChat::service::grpc::chat.pb.dart::GetChat" o-- "protobuf::protobuf.dart::BuilderInfo"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::chat.pb.dart::GetChat"
+
+class "imageChat::service::grpc::chat.pb.dart::Chat" {
+  +BuilderInfo info_
+  +String chatId
+  +String uid1
+  +String uid2
+  +Chat clone()
+  +Chat copyWith()
+  {static} +Chat create()
+  +Chat createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +Chat getDefault()
+  +bool hasChatId()
+  +void clearChatId()
+  +bool hasUid1()
+  +void clearUid1()
+  +bool hasUid2()
+  +void clearUid2()
+}
+
+"imageChat::service::grpc::chat.pb.dart::Chat" o-- "protobuf::protobuf.dart::BuilderInfo"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::chat.pb.dart::Chat"
+
+class "imageChat::service::grpc::chat.pb.dart::Chats" {
+  +BuilderInfo info_
+  +List<Chat> chats
+  +Chats clone()
+  +Chats copyWith()
+  {static} +Chats create()
+  +Chats createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +Chats getDefault()
+}
+
+"imageChat::service::grpc::chat.pb.dart::Chats" o-- "protobuf::protobuf.dart::BuilderInfo"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::chat.pb.dart::Chats"
+
+class "imageChat::service::grpc::chat.pb.dart::Message" {
+  +BuilderInfo info_
+  +String id
+  +String senderId
+  +String text
+  +Int64 timestamp
+  +String img
+  +String attachment
+  +String receiverId
+  +Message clone()
+  +Message copyWith()
+  {static} +Message create()
+  +Message createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +Message getDefault()
+  +bool hasId()
+  +void clearId()
+  +bool hasSenderId()
+  +void clearSenderId()
+  +bool hasText()
+  +void clearText()
+  +bool hasTimestamp()
+  +void clearTimestamp()
+  +bool hasImg()
+  +void clearImg()
+  +bool hasAttachment()
+  +void clearAttachment()
+  +bool hasReceiverId()
+  +void clearReceiverId()
+}
+
+"imageChat::service::grpc::chat.pb.dart::Message" o-- "protobuf::protobuf.dart::BuilderInfo"
+"imageChat::service::grpc::chat.pb.dart::Message" o-- "fixnum::fixnum.dart::Int64"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::chat.pb.dart::Message"
+
+class "imageChat::service::grpc::chat.pb.dart::GetMessage" {
+  +BuilderInfo info_
+  +String chatId
+  +GetMessage clone()
+  +GetMessage copyWith()
+  {static} +GetMessage create()
+  +GetMessage createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +GetMessage getDefault()
+  +bool hasChatId()
+  +void clearChatId()
+}
+
+"imageChat::service::grpc::chat.pb.dart::GetMessage" o-- "protobuf::protobuf.dart::BuilderInfo"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::chat.pb.dart::GetMessage"
+
+class "imageChat::service::grpc::chat.pb.dart::Messages" {
+  +BuilderInfo info_
+  +List<Message> message
+  +Messages clone()
+  +Messages copyWith()
+  {static} +Messages create()
+  +Messages createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +Messages getDefault()
+}
+
+"imageChat::service::grpc::chat.pb.dart::Messages" o-- "protobuf::protobuf.dart::BuilderInfo"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::chat.pb.dart::Messages"
+
+class "imageChat::service::grpc::chat.pb.dart::ReadMessage" {
+  +BuilderInfo info_
+  +String id
+  +ReadMessage clone()
+  +ReadMessage copyWith()
+  {static} +ReadMessage create()
+  +ReadMessage createEmptyInstance()
+  {static} +PbList createRepeated()
+  {static} +ReadMessage getDefault()
+  +bool hasId()
+  +void clearId()
+}
+
+"imageChat::service::grpc::chat.pb.dart::ReadMessage" o-- "protobuf::protobuf.dart::BuilderInfo"
+"protobuf::protobuf.dart::GeneratedMessage" <|-- "imageChat::service::grpc::chat.pb.dart::ReadMessage"
+
+class "imageChat::service::file_service.dart::FileService" {
+  +Logger log
+  +String service
+  +Future uploadImage()
+}
+
+"imageChat::service::file_service.dart::FileService" o-- "logger::src::logger.dart::Logger"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "imageChat::service::file_service.dart::FileService"
+
+class "imageChat::service::auth_service.dart::Status" {
+  +int index
+  {static} +List<Status> values
+  {static} +Status Uninitialized
+  {static} +Status Authenticated
+  {static} +Status Unauthenticated
+}
+
+"imageChat::service::auth_service.dart::Status" o-- "imageChat::service::auth_service.dart::Status"
+
+class "imageChat::service::auth_service.dart::AuthStatus" {
+  +int index
+  {static} +List<AuthStatus> values
+  {static} +AuthStatus Uninitialized
+  {static} +AuthStatus Authenticated
+  {static} +AuthStatus Unauthenticated
+}
+
+"imageChat::service::auth_service.dart::AuthStatus" o-- "imageChat::service::auth_service.dart::AuthStatus"
+
+class "imageChat::service::auth_service.dart::AuthService" {
+  +Logger log
+  +String service
+  +User user
+  +bool firstTime
+  +GoogleSignIn googleSignIn
+  +AuthStatus status
+  +Future signInSilently()
+  +Future init()
+  +Future signIn()
+  +Future thirdPartySignIn()
+  +Future refresh()
+  +Future signOut()
+  +Future getUser()
+  +Future searchUser()
+}
+
+"imageChat::service::auth_service.dart::AuthService" o-- "logger::src::logger.dart::Logger"
+"imageChat::service::auth_service.dart::AuthService" o-- "imageChat::model::user.dart::User"
+"imageChat::service::auth_service.dart::AuthService" o-- "google_sign_in::google_sign_in.dart::GoogleSignIn"
+"imageChat::service::auth_service.dart::AuthService" o-- "imageChat::service::auth_service.dart::AuthStatus"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "imageChat::service::auth_service.dart::AuthService"
+
+class "imageChat::service::mail_service.dart::MailService" {
+  +Future sendEmail()
+}
+
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "imageChat::service::mail_service.dart::MailService"
+
+class "imageChat::service::chat_service.dart::ChatService" {
+  +Logger log
+  +String host
+  +int port
+  +String accessToken
+  +void connect()
+  +Future sendMessage()
+  +void receiveMessage()
+  +dynamic dispose()
+}
+
+"imageChat::service::chat_service.dart::ChatService" o-- "logger::src::logger.dart::Logger"
+
+class "imageChat::service::chat_service.dart::_HeaderInterceptor" {
+  +ResponseStream interceptStreaming()
+  +ResponseFuture interceptUnary()
+}
+
+"grpc::src::client::interceptor.dart::ClientInterceptor" <|-- "imageChat::service::chat_service.dart::_HeaderInterceptor"
+
+class "imageChat::service::_exception.dart::GRPCError" {
+  +int index
+  {static} +List<GRPCError> values
+  {static} +GRPCError OK
+  {static} +GRPCError CANCELLED
+  {static} +GRPCError UNKNOWN
+  {static} +GRPCError INVALID_ARGUMENT
+  {static} +GRPCError DEADLINE_EXCEEDED
+  {static} +GRPCError NOT_FOUND
+  {static} +GRPCError ALREADY_EXISTS
+  {static} +GRPCError PERMISSION_DENIED
+  {static} +GRPCError RESOURCE_EXHAUSTED
+  {static} +GRPCError FAILED_PRECONDITION
+  {static} +GRPCError ABORTED
+  {static} +GRPCError OUT_OF_RANGE
+  {static} +GRPCError UNIMPLEMENTED
+  {static} +GRPCError INTERNAL
+  {static} +GRPCError UNAVAILABLE
+  {static} +GRPCError DATA_LOSS
+  {static} +GRPCError UNAUTHENTICATED
+}
+
+"imageChat::service::_exception.dart::GRPCError" o-- "imageChat::service::_exception.dart::GRPCError"
+
+class "imageChat::service::_exception.dart::ServiceException" {
+  +GRPCError code
+  +String message
+}
+
+"imageChat::service::_exception.dart::ServiceException" o-- "imageChat::service::_exception.dart::GRPCError"
+"dart::core::Exception" <|-- "imageChat::service::_exception.dart::ServiceException"
+
+class "imageChat::service::_hive.dart::HiveBoxes" {
+  {static} +String message
+  {static} +String user
+  {static} +String userMessages
+}
+
+class "imageChat::logger.dart::SimpleLogPrinter" {
+  +String className
+  +List log()
+}
+
+"logger::src::log_printer.dart::LogPrinter" <|-- "imageChat::logger.dart::SimpleLogPrinter"
+
+class "imageChat::util::network_config.dart::ApiError" {
+  +int statusCode
+  +String errorMessage
+  +String toString()
+}
+
+"dart::core::Exception" <|-- "imageChat::util::network_config.dart::ApiError"
+
+class "imageChat::util::network_config.dart::API" {
+  +Client client
+  +Logger log
+  +void setAuthorization()
+  +Future post()
+  +Future get()
+  +Future put()
+  +Future delete()
+}
+
+"imageChat::util::network_config.dart::API" o-- "http::src::client.dart::Client"
+"imageChat::util::network_config.dart::API" o-- "logger::src::logger.dart::Logger"
+
+class "imageChat::util::validator.dart::Validator" {
+  {static} +String emailValidator()
+  {static} +String commentValidator()
+  {static} +String pwdValidator()
+  {static} +String pinValidator()
+  {static} +String mobileValidator()
+  {static} +String ageValidator()
+  {static} +String nricValidator()
+  {static} +String foodNameValidator()
+  {static} +String usernameValidator()
+  {static} +String addressValidator()
+  {static} +String bankNameValidator()
+  {static} +String bankAccValidator()
+}
+
+class "imageChat::util::validator.dart::MobileValidator" {
+  {static} +String malaysiaMobilePattern
+  {static} +String Function(String) mobileValidator
+  {static} +String mobileTransform()
+}
+
+"imageChat::util::validator.dart::MobileValidator" o-- "imageChat::util::validator.dart::String Function(String)"
+
+class "imageChat::model::user.dart::User" {
+  +String id
+  +String name
+  +String email
+  +String img
+  +int hashCode
+  +String toRawJson()
+  +Map toJson()
+  +String toString()
+  +ChatUser toChatUser()
+  +bool ==()
+}
+
+class "imageChat::model::user.dart::UserAdapter" {
+  +int typeId
+  +int hashCode
+  +User read()
+  +void write()
+  +bool ==()
+}
+
+"hive::hive.dart::TypeAdapter<T>" <|-- "imageChat::model::user.dart::UserAdapter"
+
+class "imageChat::model::message.dart::Message" {
+  +dynamic id
+  +dynamic senderId
+  +dynamic receiverId
+  +dynamic text
+  +dynamic img
+  +dynamic attachment
+  +DateTime time
+  +bool read
+  +Future toChatMessage()
+}
+
+class "imageChat::model::message.dart::MessageAdapter" {
+  +int typeId
+  +int hashCode
+  +Message read()
+  +void write()
+  +bool ==()
+}
+
+"hive::hive.dart::TypeAdapter<T>" <|-- "imageChat::model::message.dart::MessageAdapter"
+
+class "imageChat::view::utils::LoadingPage.dart::LoadingPage" {
+  +dynamic message
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::utils::LoadingPage.dart::LoadingPage"
+
+class "imageChat::view::common::text_with_help.dart::TextWithHelp" {
+  +Text text
+  +Function onHelpTap
+  +Widget build()
+}
+
+"imageChat::view::common::text_with_help.dart::TextWithHelp" o-- "flutter::src::widgets::text.dart::Text"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::common::text_with_help.dart::TextWithHelp"
+
+class "imageChat::view::common::empty.dart::EmptyPage" {
+  +PageTitle title
+  +dynamic subtitle
+  +dynamic buttonText
+  +Function onTap
+  +Widget build()
+}
+
+"imageChat::view::common::empty.dart::EmptyPage" o-- "imageChat::view::common::page_title.dart::PageTitle"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::common::empty.dart::EmptyPage"
+
+class "imageChat::view::common::page_title.dart::PageTitle" {
+  +dynamic titleString
+  +EdgeInsets margin
+  +Widget trailing
+  +Widget build()
+}
+
+"imageChat::view::common::page_title.dart::PageTitle" o-- "flutter::src::painting::edge_insets.dart::EdgeInsets"
+"imageChat::view::common::page_title.dart::PageTitle" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::common::page_title.dart::PageTitle"
+
+class "imageChat::view::common::portfolio::score_status.dart::ScoreStatus" {
+  +int index
+  {static} +List<ScoreStatus> values
+  {static} +ScoreStatus red
+  {static} +ScoreStatus average
+  {static} +ScoreStatus green
+  {static} +ScoreStatus abnormal
+}
+
+"imageChat::view::common::portfolio::score_status.dart::ScoreStatus" o-- "imageChat::view::common::portfolio::score_status.dart::ScoreStatus"
+
+class "imageChat::view::common::side_paded.dart::SidePaded" {
+  +Widget child
+  +Widget build()
+}
+
+"imageChat::view::common::side_paded.dart::SidePaded" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::common::side_paded.dart::SidePaded"
+
+class "imageChat::view::common::custom_alert_dialog.dart::CustomAlertDialog" {
+  +dynamic title
+  +dynamic description
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::common::custom_alert_dialog.dart::CustomAlertDialog"
+
+class "imageChat::view::common::nav::5n_bottom_bar.dart::FiveNBottomBar" {
+  +StreamController<int> pageIndexController
+  +Stream<int> pageIndexStream
+  +Widget build()
+}
+
+"imageChat::view::common::nav::5n_bottom_bar.dart::FiveNBottomBar" o-- "dart::async::StreamController<int>"
+"imageChat::view::common::nav::5n_bottom_bar.dart::FiveNBottomBar" o-- "dart::async::Stream<int>"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::common::nav::5n_bottom_bar.dart::FiveNBottomBar"
+
+class "imageChat::view::common::nav::SecretImageTopBar.dart::SecretImageTopBar" {
+  +_SecretImageTopBarState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::common::nav::SecretImageTopBar.dart::SecretImageTopBar"
+
+class "imageChat::view::common::nav::SecretImageTopBar.dart::_SecretImageTopBarState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::common::nav::SecretImageTopBar.dart::_SecretImageTopBarState"
+
+class "imageChat::view::common::nav::profie_dark_mode.dart::ProfileDarkMode" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::common::nav::profie_dark_mode.dart::ProfileDarkMode"
+
+class "imageChat::view::common::nav::QrCodeTopBar.dart::QRCodeTopBar" {
+  +_QRCodeTopBarState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::common::nav::QrCodeTopBar.dart::QRCodeTopBar"
+
+class "imageChat::view::common::nav::QrCodeTopBar.dart::_QRCodeTopBarState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::common::nav::QrCodeTopBar.dart::_QRCodeTopBarState"
+
+class "imageChat::view::pages::secret_image_encode_page.dart::SecretImageEncodePage" {
+  +dynamic Function(dynamic, dynamic) sendToChat
+  +Widget build()
+}
+
+"imageChat::view::pages::secret_image_encode_page.dart::SecretImageEncodePage" o-- "imageChat::view::pages::secret_image_encode_page.dart::dynamic Function(dynamic, dynamic)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::secret_image_encode_page.dart::SecretImageEncodePage"
+
+class "imageChat::view::pages::secret_image_encode_page.dart::SecretImageEncodeFullPage" {
+  +dynamic Function(dynamic, dynamic) sendToChat
+  +Widget build()
+}
+
+"imageChat::view::pages::secret_image_encode_page.dart::SecretImageEncodeFullPage" o-- "imageChat::view::pages::secret_image_encode_page.dart::dynamic Function(dynamic, dynamic)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::secret_image_encode_page.dart::SecretImageEncodeFullPage"
+
+class "imageChat::view::pages::GenerateCodePage.dart::GenerateCodePage" {
+  +GenerateCodePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::GenerateCodePage.dart::GenerateCodePage"
+
+class "imageChat::view::pages::GenerateCodePage.dart::GenerateCodePageState" {
+  +dynamic textInput
+  +void onChange()
+  +void dummyOnChange()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::GenerateCodePage.dart::GenerateCodePageState"
+
+class "imageChat::view::pages::secret_image_page.dart::SecretImagePage" {
+  +dynamic Function(dynamic) decodeFromChat
+  +dynamic Function(dynamic) encodeToChat
+  +State createState()
+}
+
+"imageChat::view::pages::secret_image_page.dart::SecretImagePage" o-- "imageChat::view::pages::secret_image_page.dart::dynamic Function(dynamic)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::secret_image_page.dart::SecretImagePage"
+
+class "imageChat::view::pages::secret_image_page.dart::_SecretImagePageState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::secret_image_page.dart::_SecretImagePageState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin<T>" <|-- "imageChat::view::pages::secret_image_page.dart::_SecretImagePageState"
+
+class "imageChat::view::pages::home.dart::MyHome" {
+  +FiveNBottomBar bottomNav
+  +Widget build()
+}
+
+"imageChat::view::pages::home.dart::MyHome" o-- "imageChat::view::common::nav::5n_bottom_bar.dart::FiveNBottomBar"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::home.dart::MyHome"
+
+class "imageChat::view::pages::loginPage.dart::LoginPage" {
+  +LoginPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::loginPage.dart::LoginPage"
+
+class "imageChat::view::pages::loginPage.dart::LoginPageState" {
+  +bool loading
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::loginPage.dart::LoginPageState"
+
+class "imageChat::view::pages::search_user_page.dart::SearchUserPage" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::search_user_page.dart::SearchUserPage"
+
+class "imageChat::view::pages::optical_label_page.dart::OpticalLabelPage" {
+  +_OpticalLabelPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::optical_label_page.dart::OpticalLabelPage"
+
+class "imageChat::view::pages::optical_label_page.dart::_OpticalLabelPageState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::optical_label_page.dart::_OpticalLabelPageState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin<T>" <|-- "imageChat::view::pages::optical_label_page.dart::_OpticalLabelPageState"
+
+class "imageChat::view::pages::chat_page.dart::ChatPage" {
+  +ChatUser target
+  +ChatUser self
+  +_ChatPageState createState()
+}
+
+"imageChat::view::pages::chat_page.dart::ChatPage" o-- "dash_chat::dash_chat.dart::ChatUser"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::chat_page.dart::ChatPage"
+
+class "imageChat::view::pages::chat_page.dart::_ChatPageState" {
+  +List<ChatMessage> m
+  +int i
+  +void initState()
+  +void systemMessage()
+  +void navigateToEncode()
+  +void navigateToDecode()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::chat_page.dart::_ChatPageState"
+
+class "imageChat::view::pages::GenerateImagePage.dart::GenerateImagePage" {
+  +GenerateImagePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::GenerateImagePage.dart::GenerateImagePage"
+
+class "imageChat::view::pages::GenerateImagePage.dart::GenerateImagePageState" {
+  +dynamic secretMessage
+  +dynamic secretKey
+  +void secretMessageOnChange()
+  +void secretKeyOnChange()
+  +void dummyOnChange()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::GenerateImagePage.dart::GenerateImagePageState"
+
+class "imageChat::view::pages::secret_image_decode_page.dart::SecretImageDecodePage" {
+  +dynamic urlFromChat
+  +ImagePicker picker
+  +Widget build()
+}
+
+"imageChat::view::pages::secret_image_decode_page.dart::SecretImageDecodePage" o-- "image_picker::image_picker.dart::ImagePicker"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::secret_image_decode_page.dart::SecretImageDecodePage"
+
+class "imageChat::view::pages::secret_image_decode_page.dart::SecretImageDecodeFullPage" {
+  +dynamic urlFromChat
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::secret_image_decode_page.dart::SecretImageDecodeFullPage"
+
+class "imageChat::view::pages::ScanCodePage.dart::ScanCodePage" {
+  +ScanCodePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::ScanCodePage.dart::ScanCodePage"
+
+class "imageChat::view::pages::ScanCodePage.dart::ScanCodePageState" {
+  +dynamic decodedOutput
+  +void onChange()
+  +void dummyOnChange()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::ScanCodePage.dart::ScanCodePageState"
+
+class "imageChat::view::pages::optical_label_scan_page.dart::OpticalLabelScanPage" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::optical_label_scan_page.dart::OpticalLabelScanPage"
+
+class "imageChat::view::pages::chats_list_page.dart::ChatList" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::chats_list_page.dart::ChatList"
+
+class "imageChat::view::pages::chats_list_page.dart::ChatListChoice" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::chats_list_page.dart::ChatListChoice"
+
+class "imageChat::view::pages::DecodeImagePage.dart::DecodeImagePage" {
+  +DecodeImagePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::pages::DecodeImagePage.dart::DecodeImagePage"
+
+class "imageChat::view::pages::DecodeImagePage.dart::DecodeImagePageState" {
+  +dynamic decodedOutput
+  +void onChange()
+  +void dummyOnChange()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::pages::DecodeImagePage.dart::DecodeImagePageState"
+
+class "imageChat::view::pages::optical_label_generation_page.dart::OpticalLabelGenerationPage" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::optical_label_generation_page.dart::OpticalLabelGenerationPage"
+
+class "imageChat::view::pages::profile.dart::ProfileLayout" {
+  +Box hive
+  +User user
+  +Widget build()
+}
+
+"imageChat::view::pages::profile.dart::ProfileLayout" o-- "hive::hive.dart::Box"
+"imageChat::view::pages::profile.dart::ProfileLayout" o-- "imageChat::model::user.dart::User"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::profile.dart::ProfileLayout"
+
+class "imageChat::view::pages::hero_photo_view.dart::HeroPhotoViewWrapper" {
+  +ImageProvider<Object> imageProvider
+  +Widget Function(BuildContext, ImageChunkEvent) loadingBuilder
+  +Decoration backgroundDecoration
+  +dynamic minScale
+  +dynamic maxScale
+  +dynamic tag
+  +Widget build()
+}
+
+"imageChat::view::pages::hero_photo_view.dart::HeroPhotoViewWrapper" o-- "flutter::src::painting::image_provider.dart::ImageProvider<Object>"
+"imageChat::view::pages::hero_photo_view.dart::HeroPhotoViewWrapper" o-- "photo_view::photo_view.dart::Widget Function(BuildContext, ImageChunkEvent)"
+"imageChat::view::pages::hero_photo_view.dart::HeroPhotoViewWrapper" o-- "flutter::src::painting::decoration.dart::Decoration"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::pages::hero_photo_view.dart::HeroPhotoViewWrapper"
+
+class "imageChat::view::widgets::color_widget.dart::FixedColor" {
+  +int index
+  {static} +List<FixedColor> values
+  {static} +FixedColor Red
+  {static} +FixedColor Green
+  {static} +FixedColor Blue
+}
+
+"imageChat::view::widgets::color_widget.dart::FixedColor" o-- "imageChat::view::widgets::color_widget.dart::FixedColor"
+
+class "imageChat::view::widgets::color_widget.dart::SelectionColorPainter" {
+  +FixedColor fixedColor
+  +int fixedValue
+  +void paint()
+  +bool shouldRepaint()
+}
+
+"imageChat::view::widgets::color_widget.dart::SelectionColorPainter" o-- "imageChat::view::widgets::color_widget.dart::FixedColor"
+"flutter::src::rendering::custom_paint.dart::CustomPainter" <|-- "imageChat::view::widgets::color_widget.dart::SelectionColorPainter"
+
+class "imageChat::view::widgets::format_selection_dialog.dart::FormatSelectionDialog" {
+  +SecretImageViewModel model
+  +bool encoded
+  +Widget build()
+}
+
+"imageChat::view::widgets::format_selection_dialog.dart::FormatSelectionDialog" o-- "imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::widgets::format_selection_dialog.dart::FormatSelectionDialog"
+
+class "imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRenderer" {
+  +FixedColor fixedColor
+  +int fixedValue
+  +_SelectionColorPainterRendererState createState()
+}
+
+"imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRenderer" o-- "imageChat::view::widgets::color_widget.dart::FixedColor"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRenderer"
+
+class "imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRendererState" {
+  +AnimationController controller
+  +Animation<double> animation
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRendererState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRendererState" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRendererState"
+"flutter::src::widgets::ticker_provider.dart::TickerProviderStateMixin<T>" <|-- "imageChat::view::widgets::format_selection_dialog.dart::_SelectionColorPainterRendererState"
+
+class "imageChat::view::widgets::profile::profile_list_item.dart::ProfileListItem" {
+  +IconData icon
+  +dynamic text
+  +bool hasNavigation
+  +Function action
+  +Widget build()
+}
+
+"imageChat::view::widgets::profile::profile_list_item.dart::ProfileListItem" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::view::widgets::profile::profile_list_item.dart::ProfileListItem"
+
+class "imageChat::viewmodel::chat_viewmodel.dart::ChatViewModel" {
+  +GlobalKey<DashChatState> chatViewKey
+  +ChatUser targetUser
+  +ChatUser self
+  +DB db
+  +Logger log
+  +List<ChatMessage> messages
+  +void navigateToDecode()
+  +dynamic init()
+  +dynamic loadEarlier()
+  +Future sendImage()
+  +Future sendEncodedImage()
+  +Future postMessage()
+}
+
+"imageChat::viewmodel::chat_viewmodel.dart::ChatViewModel" o-- "flutter::src::widgets::framework.dart::GlobalKey<DashChatState>"
+"imageChat::viewmodel::chat_viewmodel.dart::ChatViewModel" o-- "dash_chat::dash_chat.dart::ChatUser"
+"imageChat::viewmodel::chat_viewmodel.dart::ChatViewModel" o-- "imageChat::service::db.dart::DB"
+"imageChat::viewmodel::chat_viewmodel.dart::ChatViewModel" o-- "logger::src::logger.dart::Logger"
+"stacked::src::base_view_models.dart::BaseViewModel" <|-- "imageChat::viewmodel::chat_viewmodel.dart::ChatViewModel"
+
+class "imageChat::viewmodel::search_user_viewmodel.dart::SearchUserViewmodel" {
+  +AuthService authService
+  +User user
+  +dynamic errorString
+  +bool notFound
+  +dynamic email
+  +dynamic nameErrorString
+  +Future search()
+  +Future invite()
+  +dynamic navigateToChat()
+}
+
+"imageChat::viewmodel::search_user_viewmodel.dart::SearchUserViewmodel" o-- "imageChat::service::auth_service.dart::AuthService"
+"imageChat::viewmodel::search_user_viewmodel.dart::SearchUserViewmodel" o-- "imageChat::model::user.dart::User"
+"stacked::src::base_view_models.dart::BaseViewModel" <|-- "imageChat::viewmodel::search_user_viewmodel.dart::SearchUserViewmodel"
+
+class "imageChat::viewmodel::chatlist_viewmodel.dart::ChatListViewModel" {
+  +ChatUser self
+  +Logger log
+  +Map<ChatUser, ChatMessage> messagesList
+  +List<ChatUser> users
+  +Future init()
+  +dynamic loadMessagesList()
+  +dynamic navigateToChat()
+  +void dispose()
+}
+
+"imageChat::viewmodel::chatlist_viewmodel.dart::ChatListViewModel" o-- "dash_chat::dash_chat.dart::ChatUser"
+"imageChat::viewmodel::chatlist_viewmodel.dart::ChatListViewModel" o-- "logger::src::logger.dart::Logger"
+"stacked::src::base_view_models.dart::BaseViewModel" <|-- "imageChat::viewmodel::chatlist_viewmodel.dart::ChatListViewModel"
+
+class "imageChat::viewmodel::optical_label_viewmodel.dart::OpticalLabelViewModel" {
+  +void onImageButtonPressed()
+}
+
+"stacked::src::base_view_models.dart::BaseViewModel" <|-- "imageChat::viewmodel::optical_label_viewmodel.dart::OpticalLabelViewModel"
+
+class "imageChat::viewmodel::secret_image_viewmodel.dart::Format" {
+  +int index
+  {static} +List<Format> values
+  {static} +Format Cheelaunator
+  {static} +Format SiaPattern
+}
+
+"imageChat::viewmodel::secret_image_viewmodel.dart::Format" o-- "imageChat::viewmodel::secret_image_viewmodel.dart::Format"
+
+class "imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" {
+  +Logger log
+  +TextEditingController inputText
+  +TextEditingController secretText
+  +dynamic salt
+  +Format format
+  +bool custom
+  +FixedColor fixedColor
+  +int fixedValue
+  +Future<dynamic> Function(dynamic, dynamic) sendToChat
+  +dynamic decodeErr
+  +dynamic encodeErr
+  +ImageProvider<Object> inputImage
+  +FileImage outputImg
+  +dynamic outputString
+  +dynamic imageFromNetwork()
+  +dynamic imageFromFile()
+  +Future decode()
+  +Future encode()
+  +dynamic changePatternFormat()
+  +Future send()
+  +Future save()
+  +void clear()
+}
+
+"imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" o-- "logger::src::logger.dart::Logger"
+"imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" o-- "imageChat::viewmodel::secret_image_viewmodel.dart::Format"
+"imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" o-- "imageChat::view::widgets::color_widget.dart::FixedColor"
+"imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" o-- "imageChat::viewmodel::secret_image_viewmodel.dart::Future<dynamic> Function(dynamic, dynamic)"
+"imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" o-- "flutter::src::painting::image_provider.dart::ImageProvider<Object>"
+"imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel" o-- "flutter::src::painting::image_provider.dart::FileImage"
+"stacked::src::base_view_models.dart::BaseViewModel" <|-- "imageChat::viewmodel::secret_image_viewmodel.dart::SecretImageViewModel"
+
+class "imageChat::main.dart::MyMain" {
+  +Box hive
+  +Widget build()
+}
+
+"imageChat::main.dart::MyMain" o-- "hive::hive.dart::Box"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::main.dart::MyMain"
+
+class "imageChat::main.dart::Root" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "imageChat::main.dart::Root"
+
+
+@enduml

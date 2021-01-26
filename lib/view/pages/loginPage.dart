@@ -5,10 +5,10 @@ import '../../locator.dart';
 import '../../service/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPageState createState() => LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   bool loading = false;
 
   _signIn() async {

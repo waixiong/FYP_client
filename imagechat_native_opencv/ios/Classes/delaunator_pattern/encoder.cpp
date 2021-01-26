@@ -39,6 +39,7 @@ Mat imgGenerator(delaunator::Delaunator d, string inputData, long maxSize) {
 
     // InfInt data = InfInt(inputData);
     InfInt data = BigIntFromBytes(inputData.c_str());
+    // platform_log("input number: %s", data.toString());
     
     for (size_t i = 0; i < triangles.size(); i++) {
         // cout << triangles[i][0] << " " << triangles[i][1] << " " << triangles[i][2] << " \n" ;

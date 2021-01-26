@@ -168,7 +168,7 @@ extern "C" {
         // strcpy(inputData, contents.c_str());
         string inputData = string(inputChar);
         string outputFile = string(outputFileChar);
-        platform_log("%s", inputData.c_str());
+        platform_log("input: %s", inputData.c_str());
         _encode(inputData, outputFile, type, colorFixed, fixedValue);
         platform_log("check");
 

@@ -44,9 +44,12 @@ class SearchUserViewmodel extends BaseViewModel {
   Future<void> invite(String name) async {
     setBusy(true);
     print('invite 1');
-    if(email.isEmpty) return;
+    if(email.isEmpty) {
+      return;
+    }
     if(name.isEmpty) {
       nameErrorString = 'Fill in the name';
+      locator<SnackbarService>().showSnackbar(message: 'Fill in the name');
       return;
     }
     errorString = Validator.emailValidator(email);
@@ -72,6 +75,8 @@ class SearchUserViewmodel extends BaseViewModel {
     } catch(e) {
       print('invite error');
       print(e);
+      locator<SnackbarService>().showSnackbar(message: 'Connection error, try again');
+      return;
     }
     setBusy(false);
     locator<NavigationService>().popRepeated(1);

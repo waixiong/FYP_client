@@ -5,10 +5,11 @@ import 'package:stacked/stacked.dart';
 import 'secret_image_encode_page.dart';
 
 class SecretImagePage extends StatefulWidget {
-  final Function(String) decodeFromChat;
-  final Function(String) encodeToChat;
+  // final Function(String) decodeFromChat;
+  // final Function(String) encodeToChat;
 
-  SecretImagePage({this.decodeFromChat, this.encodeToChat});
+  // SecretImagePage({this.decodeFromChat, this.encodeToChat});
+  SecretImagePage();
 
   @override
   State<StatefulWidget> createState() => _SecretImagePageState();
