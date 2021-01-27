@@ -95,7 +95,7 @@ class SecretImageDecodePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: model.busy("decode")? null : model.decode,
+                      onPressed: model.busy("decode")? null : model.inputImage == null? null : model.decode,
                       // shape: RoundedRectangleBorder(
                       //   borderRadius: BorderRadius.circular(18.0),
                       //   // side: BorderSide()

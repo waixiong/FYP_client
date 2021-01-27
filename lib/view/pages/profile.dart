@@ -1,3 +1,5 @@
+import 'package:imageChat/view/pages/search_user_page.dart';
+
 import '../../locator.dart';
 import '../../model/user.dart';
 import '../../service/auth_service.dart';
@@ -138,14 +140,14 @@ class ProfileLayout extends StatelessWidget {
             child: ListView(
               physics: BouncingScrollPhysics(),
               children: <Widget>[
-                ProfileListItem(
-                  icon: LineAwesomeIcons.user_shield,
-                  text: 'Privacy',
-                ),
-                ProfileListItem(
-                  icon: LineAwesomeIcons.question_circle,
-                  text: 'About',
-                ),
+                // ProfileListItem(
+                //   icon: LineAwesomeIcons.user_shield,
+                //   text: 'Privacy',
+                // ),
+                // ProfileListItem(
+                //   icon: LineAwesomeIcons.question_circle,
+                //   text: 'About',
+                // ),
                 // ProfileListItem(
                 //   icon: LineAwesomeIcons.cog,
                 //   text: 'Settings',
@@ -153,6 +155,7 @@ class ProfileLayout extends StatelessWidget {
                 ProfileListItem(
                   icon: LineAwesomeIcons.user_plus,
                   text: 'Invite a Friend',
+                  action: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchUserPage())),
                 ),
                 ProfileListItem(
                   icon: LineAwesomeIcons.alternate_sign_out,
